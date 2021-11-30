@@ -504,11 +504,51 @@ class VClaimBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
+            $data = $referensi->suplesiJasaRaharja($noKartu, $tglPelayananSEP);
+            if($data["response"] !== NULL) {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
+        } catch (\Throwable $e) {
             return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->suplesiJasaRaharja($noKartu, $tglPelayananSEP),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+                'acknowledge' => 0,
+                'error_message' => $e->getMessage(),
+                'error_Line' => $e->getLine(),
+                'message'     => "Gagal!."
+            ], 500);
+        }
+    }
+
+    public function dataIndukKLL($noKartu)
+    {
+        //use your own bpjs config
+        $vclaim_conf = $this->connection();
+
+        try {
+            $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
+            $data = $referensi->dataIndukKll($noKartu);
+            if($data["response"] !== NULL) {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -526,11 +566,21 @@ class VClaimBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->inacbgSEP($noSEP),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->inacbgSEP($noSEP);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -621,11 +671,22 @@ class VClaimBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->cariByNoRujukan($searchBy, $keyword),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->cariByNoRujukan($searchBy, $keyword);
+
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -648,11 +709,21 @@ class VClaimBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->cariByNoKartu($searchBy, $keyword),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->cariByNoKartu($searchBy, $keyword);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
