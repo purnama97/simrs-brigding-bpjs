@@ -100,18 +100,28 @@ class VClaimBpjsController extends Controller
     //===================================END PESERTA=======================================================
 
     //===================================SEP=======================================================
-    public function cariSEP($keyword)
+    public function cariSEP($noPeserta)
     {
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->cariSEP($keyword),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->cariSEP($noPeserta);
+
+            if($data["response"] !== NULL) {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -131,70 +141,91 @@ class VClaimBpjsController extends Controller
           
 
             // $response = $r->input("sep");
-        $inputUser = $this->request->input("t_sep");
+        $inputUser = $this->request->input("request");
         $dateNow = Carbon::now()->toDateTimeString();
         $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
         $data = $referensi->insertSEP($data);
+        // $datas = json_encode($data);
+
+        // echo $datas;
+
+
+        
 
         // var_dump($inputUser);
-        // $dataSEP = [];
-        // array_push($dataSEP, [
-        //     "no_sep" => $data["noSep"],
-        //     // 'no_rawat' => null, // $response[""],
-        //     'tglsep' => $data["tglSep"],
-        //     'tglrujukan' => $inputUser["rujukan"]["tglRujukan"],
-        //     'no_rujukan' => $inputUser["rujukan"]["noRujukan"],
-        //     'kdppkrujukan' => $inputUser["rujukan"]["ppkRujukan"],
-        //     // 'nmppkrujukan' => $inputUser["rujukan"][""],
-        //     'kdppkpelayanan' => $inputUser["ppkPelayanan"],
-        //     // 'nmppkpelayanan' => $data[""], 
-        //     'jnspelayanan' => $data["jnsPelayanan"],
-        //     'catatan' => $data["catatan"],
-        //     'diagawal' => $inputUser["diagAwal"],
-        //     'nmdiagnosaawal' => $data["diagnosa"],
-        //     'kdpolitujuan' => $inputUser["poli"]["tujuan"],
-        //     'nmpolitujuan' => $data["poli"],
-        //     'klsrawat' => $data["kelasRawat"],
-        //     'lakalantas' => $inputUser["jaminan"]["lakaLantas"],
-        //     'nomr' => $data["peserta"]["noMr"],
-        //     'nama_pasien' => $data["peserta"]["nama"],
-        //     'tanggal_lahir' => $data["peserta"]["tglLahir"],
-        //     'peserta' => $data["peserta"]["jnsPeserta"],
-        //     'jkel' => $data["peserta"]["kelamin"],
-        //     'no_kartu' => $data["peserta"]["noKartu"],
-        //     'tglpulang' => "",
-        //     'asal_rujukan' => $inputUser["rujukan"]["asalRujukan"],
-        //     'eksekutif' => $data["poliEksekutif"],
-        //     'cob' => $inputUser["cob"]["cob"],
-        //     'penjamin' => $data["penjamin"],
-        //     'notelep' => $inputUser["noTelp"],
-        //     'katarak' => $inputUser["katarak"]["katarak"],
-        //     // 'tglkkl' => $data[""],
-        //     // 'keterangankkl' => "",
-        //     'suplesi' => $inputUser["jaminan"]["penjamin"]["suplesi"]["suplesi"],
-        //     'no_sep_suplesi' => $inputUser["jaminan"]["penjamin"]["suplesi"]["noSepSuplesi"],
-        //     'kdprop' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdPropinsi"],
-        //     'nmprop' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdPropinsi"],
-        //     'kdkab' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKabupaten"],
-        //     'nmkab' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKabupaten"],
-        //     'kdkec' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKecamatan"],
-        //     'nmkec' => $inputUser["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKecamatan"],
-        //     'noskdp' => $inputUser["skdp"]["noSurat"],
-        //     'kddpjp' => $inputUser["skdp"]["kodeDPJP"],
-        //     // 'nmdpjp' => $inputUser["dpjpLayanan"],
-        //     'created_at' => $dateNow,
-        //     'updated_at' => $dateNow,
-        //     "user" => $this->name
-        // ]);
+        $dataSEP = [];
+        array_push($dataSEP, [
+            "no_sep" => $data["response"]["sep"]["noSep"],
+            'no_rawat' => $inputUser["t_sep"]["noRawat"],
+            'tglsep' => $data["response"]["sep"]["tglSep"],
+            'tglrujukan' => $inputUser["t_sep"]["rujukan"]["tglRujukan"],
+            'no_rujukan' => $inputUser["t_sep"]["rujukan"]["noRujukan"],
+            'kdppkrujukan' => $inputUser["t_sep"]["rujukan"]["ppkRujukan"],
+            'nmppkrujukan' => $inputUser["t_sep"]["rujukan"]["nmPpkRujukan"],
+            'kdppkpelayanan' => '0438R002',
+            'nmppkpelayanan' => 'RSUD DABO', 
+            'jnspelayanan' => $data["response"]["sep"]["jnsPelayanan"],
+            'catatan' => $data["response"]["sep"]["catatan"],
+            'diagawal' => $inputUser["t_sep"]["diagAwal"],
+            'nmdiagnosaawal' => $data["response"]["sep"]["diagnosa"],
+            'kdpolitujuan' => $inputUser["t_sep"]["poli"]["tujuan"],
+            'nmpolitujuan' => $data["response"]["sep"]["poli"],
+            'klsrawat' => $data["response"]["sep"]["kelasRawat"],
+            'lakalantas' => $inputUser["t_sep"]["jaminan"]["lakaLantas"],
+            'nomr' => $data["response"]["sep"]["peserta"]["noMr"],
+            'nama_pasien' => $data["response"]["sep"]["peserta"]["nama"],
+            'tanggal_lahir' => $data["response"]["sep"]["peserta"]["tglLahir"],
+            'peserta' => $data["response"]["sep"]["peserta"]["jnsPeserta"],
+            'jkel' => $data["response"]["sep"]["peserta"]["kelamin"],
+            'no_kartu' => $data["response"]["sep"]["peserta"]["noKartu"],
+            'tglpulang' => NULL,
+            'asal_rujukan' => $inputUser["t_sep"]["rujukan"]["asalRujukan"],
+            'eksekutif' => $data["response"]["sep"]["poliEksekutif"],
+            'cob' => $inputUser["t_sep"]["cob"]["cob"],
+            'penjamin' => $data["response"]["sep"]["penjamin"],
+            'notelep' => $inputUser["t_sep"]["noTelp"],
+            'katarak' => $inputUser["t_sep"]["katarak"]["katarak"],
+            'tglkkl' => $inputUser["t_sep"]["jaminan"]["penjamin"]["tglKejadian"],
+            'keterangankkl' => $inputUser["t_sep"]["jaminan"]["penjamin"]["keterangan"],
+            'suplesi' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["suplesi"],
+            'no_sep_suplesi' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["noSepSuplesi"],
+            'kdprop' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdPropinsi"],
+            'nmprop' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmPropinsi"],
+            'kdkab' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKabupaten"],
+            'nmkab' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmKabupaten"],
+            'kdkec' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKecamatan"],
+            'nmkec' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmKecamatan"],
+            'noskdp' => $inputUser["t_sep"]["skdp"]["noSurat"],
+            'kddpjp' => $inputUser["t_sep"]["skdp"]["kodeDPJP"],
+            'nmdpjp' => $inputUser["t_sep"]["dpjpLayan"],
+            'created_at' => $dateNow,
+            'updated_at' => $dateNow,
+            "user" => $this->name
+        ]);
 
-        // SepBPJS::insert($dataSEP);
 
         if($data["response"] !== NULL) {
-            return response()->json([
-                'acknowledge' => 1,
-                'metaData'    => $data["metaData"],
-                'data'        => $data["response"]
-            ], 200);
+            try {
+                DB::transaction(function () use ($dataSEP) {
+                    SepBPJS::insert($dataSEP);
+                });
+    
+                DB::commit();
+    
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+                return response()->json([
+                    'acknowledge' => 0,
+                    'error_message' => $e->getMessage(),
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }
         }else{
             return response()->json([
                 'acknowledge' => 0,
@@ -216,15 +247,80 @@ class VClaimBpjsController extends Controller
     public function updateSEP($request = [])
     {
         $data = $this->request->input($request);
+        $inputUser = $this->request->input("request");
+        $dateNow = Carbon::now()->toDateTimeString();
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
+     
         $vclaim_conf = $this->connection();
+        $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
+        $datas = $referensi->updateSEP($data);
+
+        $dataSEP = [];
+        array_push($dataSEP, [
+            // "no_sep" => $inputUser["t_sep"]["noSep"],
+            'catatan' =>  $inputUser["t_sep"]["catatan"],
+            'diagawal' => $inputUser["t_sep"]["diagAwal"],
+            'nmdiagnosaawal' => $inputUser["t_sep"]["diagnosa"],
+            'kdpolitujuan' => $inputUser["t_sep"]["poli"]["tujuan"],
+            'nmpolitujuan' => $inputUser["t_sep"]["poli"]["nmtujuan"],
+            'lakalantas' => $inputUser["t_sep"]["jaminan"]["lakaLantas"],
+            'nomr' => $inputUser["t_sep"]["noMR"],
+            'tglpulang' => NULL,
+            'eksekutif' => $inputUser["t_sep"]["poli"]["eksekutif"],
+            'cob' => $inputUser["t_sep"]["cob"]["cob"],
+            'notelep' => $inputUser["t_sep"]["noTelp"],
+            'katarak' => $inputUser["t_sep"]["katarak"]["katarak"],
+            'tglkkl' => $inputUser["t_sep"]["jaminan"]["penjamin"]["tglKejadian"],
+            'keterangankkl' => $inputUser["t_sep"]["jaminan"]["penjamin"]["keterangan"],
+            'suplesi' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["suplesi"],
+            'no_sep_suplesi' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["noSepSuplesi"],
+            'kdprop' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdPropinsi"],
+            'nmprop' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmPropinsi"],
+            'kdkab' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKabupaten"],
+            'nmkab' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmKabupaten"],
+            'kdkec' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["kdKecamatan"],
+            'nmkec' => $inputUser["t_sep"]["jaminan"]["penjamin"]["suplesi"]["lokasiLaka"]["nmKecamatan"],
+            'noskdp' => $inputUser["t_sep"]["skdp"]["noSurat"],
+            'kddpjp' => $inputUser["t_sep"]["skdp"]["kodeDPJP"],
+            'nmdpjp' => $inputUser["t_sep"]["dpjpLayan"],
+            'created_at' => $dateNow,
+            'updated_at' => $dateNow,
+            "user" => $this->name
+        ]);
+
+        // var_dump($dataSEP);
+        
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->updateSEP($data),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            if($datas["response"] !== NULL) {
+                try {
+                    DB::transaction(function () use ($datas, $dataSEP) {
+                        SepBPJS::where('no_sep', $datas["response"])->update($dataSEP[0]);
+                    });
+        
+                    DB::commit();
+        
+                    return response()->json([
+                        'acknowledge' => 1,
+                        'metaData'    => $datas["metaData"],
+                        'data'        => $datas["response"],
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->json([
+                        'acknowledge' => 0,
+                        'data'        => $dataSEP,
+                        'error_message' => $e->getMessage(),
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                }
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $datas["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -242,11 +338,38 @@ class VClaimBpjsController extends Controller
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->deleteSEP($data),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $datas = $referensi->deleteSEP($data);
+            if($datas["metaData"]["code"] === "200") {
+
+                try {
+                    DB::transaction(function () use ($data) {
+                        $ticket = SepBPJS::where("no_Sep", $data["request"]["t_sep"]["noSep"]);
+                        $ticket->delete();
+                    });
+
+        
+                    DB::commit();
+        
+                    return response()->json([
+                        'acknowledge' => 1,
+                        'metaData'    => $datas["metaData"],
+                        'data'        => $datas["response"],
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->json([
+                        'acknowledge' => 0,
+                        'error_message' => $e->getMessage(),
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                }
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $datas["metaData"],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -264,11 +387,20 @@ class VClaimBpjsController extends Controller
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->pengajuanPenjaminanSep($data),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->pengajuanPenjaminanSep($data);
+            if($data["response"] !== NULL) {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -286,11 +418,20 @@ class VClaimBpjsController extends Controller
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->approvalPenjaminanSep($data),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->approvalPenjaminanSep($data);
+            if($data["response"] !== NULL) {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -305,15 +446,47 @@ class VClaimBpjsController extends Controller
     public function updateTglPlg($request = [])
     {
         $data = $this->request->input($request);
+        $inputUser = $this->request->input("request");
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->updateTglPlg($data),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->updateTglPlg($data);
+            $dataSEP = [];
+            array_push($dataSEP, [
+                "tglpulang" => $inputUser["t_sep"]["tglPulang"]
+            ]);
+
+            if($data["response"] !== NULL) {   
+                try {
+                    DB::transaction(function () use ($inputUser, $dataSEP) {
+                        SepBPJS::where('no_sep', $inputUser["t_sep"]["noSep"])->update($dataSEP[0]);
+                    });
+        
+                    DB::commit();
+        
+                    return response()->json([
+                        'acknowledge' => 1,
+                        'metaData'    => $data["metaData"],
+                        'data'        => $data["response"],
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return response()->json([
+                        'acknowledge' => 0,
+                        'data'        => $dataSEP,
+                        'error_message' => $e->getMessage(),
+                        'message'     => "BPJS CONNECTED!"
+                    ], 200);
+                }
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,

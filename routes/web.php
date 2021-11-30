@@ -39,6 +39,17 @@ $router->group(
         $router->post('BPJS/VClaim/SEP','VClaimBpjsController@insertSEP');
         $router->put('BPJS/VClaim/SEP','VClaimBpjsController@updateSEP');
         $router->delete('BPJS/VClaim/SEP','VClaimBpjsController@deleteSEP');
+        $router->get('BPJS/VClaim/SEP/{noPeserta}','VClaimBpjsController@cariSEP');
+        $router->get('BPJS/VClaim/SEP','VClaimBpjsController@listSEP');
+
+        // SEP
+        $router->post('BPJS/VClaim/SEP','VClaimBpjsController@insertSEP');
+        $router->put('BPJS/VClaim/SEP','VClaimBpjsController@updateSEP');
+        $router->delete('BPJS/VClaim/SEP','VClaimBpjsController@deleteSEP');
+        $router->get('BPJS/VClaim/SEP','VClaimBpjsController@listSEP');
+        $router->post('BPJS/VClaim/SEP/pengajuanSEP', 'VClaimBpjsController@pengajuanSEP');
+        $router->post('BPJS/VClaim/SEP/aprovalSEP', 'VClaimBpjsController@approvalPenjaminanSep');
+        $router->put('BPJS/VClaim/SEP/updtglplg', 'VClaimBpjsController@updateTglPlg');
 
 
         $router->get('BPJS/VClaim/Monitoring/Kunjungan/Tanggal/{tglSep}/JnsPelayanan/{jnsPelayanan}','VClaimBpjsController@dataKunjungan');

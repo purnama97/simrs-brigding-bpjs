@@ -11,7 +11,7 @@ use Laravel\Lumen\Auth\Authorizable;
 class SepBPJS extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
-    protected $table      = 'bridging_sep_bpjs';
+    protected $table      = 'rs_bpjs_sep';
     protected $primaryKey = 'no_sep';
     protected $keyType    = 'string';
     public $timestamps    = false;
