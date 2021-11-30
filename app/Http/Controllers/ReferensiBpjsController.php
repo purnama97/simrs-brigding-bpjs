@@ -37,11 +37,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->diagnosa($diagnosa),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->diagnosa($diagnosa);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -59,11 +69,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->poli($poli),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->poli($poli);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -81,11 +101,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->faskes($kode_faskes, $jenis_faskes),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->faskes($kode_faskes, $jenis_faskes);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -103,11 +133,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->dokterDpjp($jenis_pelayanan, $tgl_pelayanan, $kode_spesialis),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->dokterDpjp($jenis_pelayanan, $tgl_pelayanan, $kode_spesialis);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -125,11 +165,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->propinsi(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->propinsi();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -147,11 +197,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->kabupaten($kabupaten),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->kabupaten($kabupaten);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -169,11 +229,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->kecamatan($kecamatan),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->kecamatan($kecamatan);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -191,11 +261,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->diagnosaPRB(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->diagnosaPRB();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -213,11 +293,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->obatPRB($obat),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->obatPRB($obat);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -235,11 +325,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->procedure($prosedur),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->procedure($prosedur);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -257,11 +357,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->kelasRawat(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->kelasRawat();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -279,11 +389,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->dokter($dokter),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data =  $referensi->dokter($dokter);
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -301,11 +421,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->spesialistik(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->spesialistik();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -323,11 +453,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->ruangrawat(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->ruangrawat();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -345,11 +485,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->carakeluar(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data = $referensi->carakeluar();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -367,11 +517,21 @@ class ReferensiBpjsController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->pascapulang(),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            $data =  $referensi->pascapulang();
+            if($data["response"] !== NULL) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
