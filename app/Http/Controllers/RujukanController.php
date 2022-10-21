@@ -4,11 +4,20 @@
 namespace App\Http\Controllers;
 
 use Purnama97;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Libraries\Helpers;
-use App\ConfigBpjs;
+use Carbon\Carbon;
+use App\SepBPJS;
 
-class ReferensiBpjsController extends Controller
+class RujukanController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+        $this->name = $this->request->auth['Credentials']->name;
+    }
+
     public function connection()
     {
 
@@ -19,18 +28,19 @@ class ReferensiBpjsController extends Controller
             'user_key' => env('USER_KEY_BPJS'),
             'service_name' => env('SERVICE_NAME_BPJS'),
         ];
+        
 
         return $vclaim_conf;
     }
 
-    public function diagnosa($diagnosa)
+    public function insertRujukan($request = [])
     {
-        //use your own bpjs config
+        $data = $this->request->input($request);
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->diagnosa($diagnosa);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->insertRujukan($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -55,14 +65,14 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function poli($poli)
+    public function updateRujukan($request = [])
     {
-        //use your own bpjs config
+        $data = $this->request->input($request);
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->poli($poli);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data =  $referensi->updateRujukan($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -87,14 +97,22 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function faskes($kode_faskes, $jenis_faskes)
+    public function deleteRujukan($noRujukan)
     {
-        //use your own bpjs config
+        $data = [
+            "request" => [
+                "t_rujukan" => [
+                    "noRujukan" => $noRujukan,
+                    "user" => $this->name
+                ]
+            ]
+        ];
+        
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->faskes($kode_faskes, $jenis_faskes);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->deleteRujukan($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -119,14 +137,14 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function dokterDpjp($jenis_pelayanan, $tgl_pelayanan, $kode_spesialis)
+    public function insertRujukanKhusus($request = [])
     {
-        //use your own bpjs config
+        $data = $this->request->input($request);
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->dokterDpjp($jenis_pelayanan, $tgl_pelayanan, $kode_spesialis);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->insertRujukanKhusus($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -151,14 +169,14 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function propinsi()
+    public function updateRujukanKhusus($request = [])
     {
-        //use your own bpjs config
+        $data = $this->request->input($request);
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->propinsi();
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data =  $referensi->updateRujukanKhusus($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -183,14 +201,14 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function kabupaten($kabupaten)
+    public function deleteRujukanKhusus($request = [])
     {
-        //use your own bpjs config
+        $data = $this->request->input($request);
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
-
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->kabupaten($kabupaten);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->deleteRujukanKhusus($data);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -215,14 +233,15 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function kecamatan($kecamatan)
+    public function spesialistikRujukan($kodePPK, $tglRujuk)
     {
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->kecamatan($kecamatan);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->spesialistikRujukan($kodePPK, $tglRujuk);
+
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -247,14 +266,15 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function diagnosaPRB()
+    public function saranaRujukan($kodePPK)
     {
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->diagnosaPRB();
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->saranaRujukan($kodePPK);
+
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -279,14 +299,20 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function obatPRB($obat)
+    public function cariByNoRujukan($searchBy = null, $noRujukan)
     {
+        if (empty($searchBy)) {
+            $searchBy = ' ';
+        } else {
+            $searchBy = $searchBy;
+        }
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->obatPRB($obat);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariByNoRujukan($searchBy, $noRujukan);
+
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -311,14 +337,19 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function prosedur($prosedure)
+    public function cariByNoKartu($searchBy = null, $noKartu)
     {
+        if (empty($searchBy)) {
+            $searchBy = ' ';
+        } else {
+            $searchBy = $searchBy;
+        }
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->procedure($prosedure);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariByNoKartu($searchBy, $noKartu, false);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -343,14 +374,19 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function kelasRawat()
+    public function cariByListNoKartu($searchBy = null, $noKartu)
     {
+        if (empty($searchBy)) {
+            $searchBy = ' ';
+        } else {
+            $searchBy = $searchBy;
+        }
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->kelasRawat();
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariByNoKartu($searchBy, $noKartu, true);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -375,14 +411,43 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function dokter($dokter)
+
+    public function cariByTglRujukan($searchBy = null, $keyword)
+    {
+        if (empty($searchBy)) {
+            $searchBy = ' ';
+        } else {
+            $searchBy = $searchBy;
+        }
+        //use your own bpjs config
+        $vclaim_conf = $this->connection();
+
+        try {
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            return response()->json([
+                'acknowledge' => 1,
+                'data'        => $referensi->cariByTglRujukan($searchBy, $keyword),
+                'message'     => "BPJS CONNECTED!"
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'acknowledge' => 0,
+                'error_message' => $e->getMessage(),
+                'error_Line' => $e->getLine(),
+                'message'     => "Gagal!."
+            ], 500);
+        }
+    }
+
+    public function cariRujukanKhusus($bulan, $tahun)
     {
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data =  $referensi->dokter($dokter);
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariRujukanKhusus($bulan, $tahun);
+
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -407,14 +472,46 @@ class ReferensiBpjsController extends Controller
         }
     }
 
-    public function spesialistik()
-    {
+    public function getRujukKeluar($tglMulai, $tglAkhir){
+         //use your own bpjs config
+         $vclaim_conf = $this->connection();
+
+         try {
+             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+             $data = $referensi->getRujukKeluar($tglMulai, $tglAkhir);
+ 
+             if($data["response"] !== NULL) {   
+                 return response()->json([
+                     'acknowledge' => 1,
+                     'metaData'    => $data["metaData"],
+                     'data'        => $data["response"],
+                     'message'     => "BPJS CONNECTED!"
+                 ], 200);
+             }else{
+                 return response()->json([
+                     'acknowledge' => 0,
+                     'metaData'    => $data["metaData"],
+                     'data'        => [],
+                 ], 200);
+             }
+         } catch (\Throwable $e) {
+             return response()->json([
+                 'acknowledge' => 0,
+                 'error_message' => $e->getMessage(),
+                 'error_Line' => $e->getLine(),
+                 'message'     => "Gagal!."
+             ], 500);
+         }
+    }
+
+    public function cariRujukKeluar($noRujukan){
         //use your own bpjs config
         $vclaim_conf = $this->connection();
 
         try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->spesialistik();
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariRujukKeluar($noRujukan);
+
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -437,134 +534,5 @@ class ReferensiBpjsController extends Controller
                 'message'     => "Gagal!."
             ], 500);
         }
-    }
-
-    public function ruangrawat()
-    {
-        //use your own bpjs config
-        $vclaim_conf = $this->connection();
-
-        try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->ruangrawat();
-            if($data["response"] !== NULL) {   
-                return response()->json([
-                    'acknowledge' => 1,
-                    'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
-                    'message'     => "BPJS CONNECTED!"
-                ], 200);
-            }else{
-                return response()->json([
-                    'acknowledge' => 0,
-                    'metaData'    => $data["metaData"],
-                    'data'        => [],
-                ], 200);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'acknowledge' => 0,
-                'error_message' => $e->getMessage(),
-                'error_Line' => $e->getLine(),
-                'message'     => "Gagal!."
-            ], 500);
-        }
-    }
-
-    public function carakeluar()
-    {
-        //use your own bpjs config
-        $vclaim_conf = $this->connection();
-
-        try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->carakeluar();
-            if($data["response"] !== NULL) {   
-                return response()->json([
-                    'acknowledge' => 1,
-                    'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
-                    'message'     => "BPJS CONNECTED!"
-                ], 200);
-            }else{
-                return response()->json([
-                    'acknowledge' => 0,
-                    'metaData'    => $data["metaData"],
-                    'data'        => [],
-                ], 200);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'acknowledge' => 0,
-                'error_message' => $e->getMessage(),
-                'error_Line' => $e->getLine(),
-                'message'     => "Gagal!."
-            ], 500);
-        }
-    }
-
-    public function pascapulang()
-    {
-        //use your own bpjs config
-        $vclaim_conf = $this->connection();
-
-        try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data =  $referensi->pascapulang();
-            if($data["response"] !== NULL) {   
-                return response()->json([
-                    'acknowledge' => 1,
-                    'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
-                    'message'     => "BPJS CONNECTED!"
-                ], 200);
-            }else{
-                return response()->json([
-                    'acknowledge' => 0,
-                    'metaData'    => $data["metaData"],
-                    'data'        => [],
-                ], 200);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'acknowledge' => 0,
-                'error_message' => $e->getMessage(),
-                'error_Line' => $e->getLine(),
-                'message'     => "Gagal!."
-            ], 500);
-        }
-    }
-
-    public function dataObat($namaObat)
-    {
-        //use your own bpjs config
-        $vclaim_conf = $this->connection();
-
-        try {
-            $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
-            $data = $referensi->obat($namaObat);
-            if($data["response"] !== NULL) {   
-                return response()->json([
-                    'acknowledge' => 1,
-                    'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
-                    'message'     => "BPJS CONNECTED!"
-                ], 200);
-            }else{
-                return response()->json([
-                    'acknowledge' => 0,
-                    'metaData'    => $data["metaData"],
-                    'data'        => [],
-                ], 200);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'acknowledge' => 0,
-                'error_message' => $e->getMessage(),
-                'error_Line' => $e->getLine(),
-                'message'     => "Gagal!."
-            ], 500);
-        }
-    }
+   }
 }
-

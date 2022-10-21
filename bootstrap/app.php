@@ -72,6 +72,17 @@ $app->configure('app');
 |
 */
 
+$app->middleware([
+    App\Http\Middleware\CorsMiddleware::class
+ ]);
+
+ $app->routeMiddleware([
+    'mguest' => App\Http\Middleware\GuestMiddleware::class,
+    'auth' => App\Http\Middleware\JwtMiddleware::class,
+    'publicAccess' => App\Http\Middleware\PublicAccessMiddleware::class,
+
+]);
+
 // $app->middleware([
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
@@ -105,17 +116,6 @@ $app->configure('app');
 | can respond to, as well as the controllers that may handle them.
 |
 */
-
-$app->middleware([
-    App\Http\Middleware\CorsMiddleware::class
- ]);
-
- $app->routeMiddleware([
-    'mguest' => App\Http\Middleware\GuestMiddleware::class,
-    'auth' => App\Http\Middleware\JwtMiddleware::class,
-    'publicAccess' => App\Http\Middleware\PublicAccessMiddleware::class,
-
-]);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',

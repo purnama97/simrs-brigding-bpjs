@@ -19,14 +19,14 @@ class JwtMiddleware
         $key        = trim('JhbGciOiJIUzI1N0eXAiOiJKV1QiLC');
         $CompCode   = trim($request->header('CompCode'));
 
-        if (env("DB_DATABASE_RSUD") != "RSUD_DABO") {
+        if (env("DB_DATABASE_BRIDGING_BPJS") != "RSIA_SARHUS_LIVE") {
             Config::set("database.connections.sqlsrv", [
-                "host" => "103.6.55.34",
-                "database" => 'RSUD_DABO',
-                "username" => 'user_rs',
+                "host" => "localhost",
+                "database" => 'RSIA_SARHUS_LIVE',
+                "username" => 'sa',
                 "driver" => 'sqlsrv',
                 'port' => '1433',
-                "password" => 'ZUa5TkQX'
+                "password" => 'ipurdev'
             ]);
             DB::reconnect('sqlsrv');
         }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94f541e490415631d41ec2780d7e367a",
+    "content-hash": "849b56c42809eb69a76b6e981dd95466",
     "packages": [
         {
             "name": "brick/math",
@@ -2576,6 +2576,61 @@
             "time": "2021-04-09T13:42:10+00:00"
         },
         {
+            "name": "paragonie/random_compat",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paragonie/random_compat.git",
+                "reference": "91748753a20dd02a227fc10777bb996a7ca527fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/91748753a20dd02a227fc10777bb996a7ca527fc",
+                "reference": "91748753a20dd02a227fc10777bb996a7ca527fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*|5.*"
+            },
+            "suggest": {
+                "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/random.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paragon Initiative Enterprises",
+                    "email": "security@paragonie.com",
+                    "homepage": "https://paragonie.com"
+                }
+            ],
+            "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
+            "keywords": [
+                "csprng",
+                "polyfill",
+                "pseudorandom",
+                "random"
+            ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/random_compat/issues",
+                "source": "https://github.com/paragonie/random_compat"
+            },
+            "time": "2022-01-17T05:50:28+00:00"
+        },
+        {
             "name": "phpoption/phpoption",
             "version": "1.8.0",
             "source": {
@@ -2936,6 +2991,48 @@
                 "source": "https://github.com/purnama97/bpjs-bridging/tree/master"
             },
             "time": "2021-11-20T00:53:26+00:00"
+        },
+        {
+            "name": "purnama97/inacbgs-bridging",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/purnama97/Integrasi-SIMRS-dan-INCBG.git",
+                "reference": "fe3fe8df88adbd36c37f64d061708dded9f23833"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/purnama97/Integrasi-SIMRS-dan-INCBG/zipball/fe3fe8df88adbd36c37f64d061708dded9f23833",
+                "reference": "fe3fe8df88adbd36c37f64d061708dded9f23833",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "paragonie/random_compat": "dev-master"
+            },
+            "default-branch": true,
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "Purnama97\\Inacbgs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "mit"
+            ],
+            "authors": [
+                {
+                    "name": "Ipur Purnama",
+                    "email": "ipur.purnama351@gmail.com"
+                }
+            ],
+            "description": "Wrapper for Integration SIMRS - INA-CBG v.5.6.x",
+            "support": {
+                "issues": "https://github.com/purnama97/Integrasi-SIMRS-dan-INCBG/issues",
+                "source": "https://github.com/purnama97/Integrasi-SIMRS-dan-INCBG/tree/master"
+            },
+            "time": "2022-02-14T11:39:38+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -7275,7 +7372,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "purnama97/bpjs-bridging": 20
+        "purnama97/bpjs-bridging": 20,
+        "purnama97/inacbgs-bridging": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -7283,5 +7381,5 @@
         "php": "^7.2.5"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }

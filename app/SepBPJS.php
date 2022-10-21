@@ -11,16 +11,16 @@ use Laravel\Lumen\Auth\Authorizable;
 class SepBPJS extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
-    protected $table      = 'rs_bpjs_sep';
-    protected $primaryKey = 'no_sep';
+    protected $table      = 'tSep';
+    protected $primaryKey = 'noSep';
     protected $keyType    = 'string';
     public $timestamps    = false;
     protected $fillable = [
-        'no_sep',
-        'no_rawat',
+        'noSep',
+        'noRawat',
         'tglsep',
         'tglrujukan',
-        'no_rujukan',
+        'noRujukan',
         'kdppkrujukan',
         'nmppkrujukan',
         'kdppkpelayanan',
@@ -33,15 +33,13 @@ class SepBPJS extends Model implements AuthenticatableContract, AuthorizableCont
         'nmpolitujuan',
         'klsrawat',
         'lakalantas',
-        'user',
         'nomr',
-        'nama_pasien',
-        'tanggal_lahir',
+        'namaRasien',
+        'tanggalLahir',
         'peserta',
         'jkel',
         'no_kartu',
-        'tglpulang',
-        'asal_rujukan',
+        'asalRujukan',
         'eksekutif',
         'cob',
         'penjamin',
@@ -50,7 +48,7 @@ class SepBPJS extends Model implements AuthenticatableContract, AuthorizableCont
         'tglkkl',
         'keterangankkl',
         'suplesi',
-        'no_sep_suplesi',
+        'noSepSuplesi',
         'kdprop',
         'nmprop',
         'kdkab',
@@ -59,6 +57,17 @@ class SepBPJS extends Model implements AuthenticatableContract, AuthorizableCont
         'nmkec',
         'noskdp',
         'kddpjp',
-        'nmdpjp'
+        'nmdpjp',
+        'user',
+        'kodePPK',
+        'tglpulang',
+        'hakKelas',
+        'pembiayaan',
+        'tujuan',
+        'penunjang',
+        'assesment',
+        'flagProcedure',
+        'createdAt',
+        'updatedAt',
     ];
 }
