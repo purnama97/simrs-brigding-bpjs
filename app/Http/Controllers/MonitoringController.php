@@ -41,7 +41,7 @@ class MonitoringController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->dataKunjungan($tglSep, $jnsPelayanan);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -73,7 +73,7 @@ class MonitoringController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->dataKlaim($tglPulang, $jnsPelayanan, $statusKlaim);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -105,7 +105,7 @@ class MonitoringController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->historyPelayanan($noKartu, $tglAwal, $tglAkhir);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -137,7 +137,7 @@ class MonitoringController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->dataKlaimJasaRaharja($jnsPelayanan, $tglMulai, $tglAkhir);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

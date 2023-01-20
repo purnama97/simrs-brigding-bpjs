@@ -42,7 +42,7 @@ class PesertaController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Peserta($vclaim_conf);
             $data = $referensi->getByNoKartu($noKartu, $tglPelayananSEP);
-            if($data["response"] !== NULL) {
+            if($data["metaData"]["code"] === "200") {
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -73,7 +73,7 @@ class PesertaController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Peserta($vclaim_conf);
             $data = $referensi->getByNIK($nik, $tglPelayananSEP);
-            if($data["response"] !== NULL) {
+            if($data["metaData"]["code"] === "200") {
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

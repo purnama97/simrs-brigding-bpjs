@@ -11,20 +11,26 @@ use Laravel\Lumen\Auth\Authorizable;
 class RencanaKontrolBPJS extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
-    protected $table      = 'tRencanaKontrol';
+    protected $table      = 'rs_bridging_surat_kontrol';
     protected $primaryKey = null;
     // protected $keyType    = 'string';
     public $timestamps    = false;
     protected $fillable = [
-        'noSuratKontrol',
-        'noSEP',
-        'kdDokter',
-        'nmDokter',
-        'kdPoliKontrol',
-        'nmPoliKontrol',
-        'tglRencanaKontrol',
-        'user',
-        'createdAt',
-        'updatedAt',
+        "noSuratKontrol",
+        "tglSurat",
+        "noSep",
+        "tglRencanaKontrol",
+        "kdDokter",
+        "nmDokter",
+        "kdPoli",
+        "nmPoli",
+        "namaPasien",
+        "tglLahir",
+        "jnsKontrol",
+        "noKartu",
+        "statusAktif",
+        "user",
+        "createdAt",
+        "updatedAt"   
     ];
 }

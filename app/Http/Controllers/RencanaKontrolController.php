@@ -11,13 +11,13 @@ use Carbon\Carbon;
 use App\SepBPJS;
 use App\ConfigBpjs;
 use App\RencanaKontrolBPJS;
-use App\SpriBPJS;
 
 class RencanaKontrolController extends Controller
 {
     public function __construct(Request $request)
     {
         $this->request = $request;
+        $this->sub = $this->request->auth['Credentials']->sub;
         $this->name = $this->request->auth['Credentials']->name;
     }
 
@@ -37,16 +37,47 @@ class RencanaKontrolController extends Controller
 
     public function insertRencanaKontrol($request = [])
     {
-        $data = $this->request->input($request);
-        $dataInput = $this->request->input($request);
-        $dateNow = Carbon::now()->toDateTimeString();
+        $input = $this->request->input($request);
+        $dateTimeNow = Carbon::now()->toDateTimeString();
+        $dateNow = Carbon::now()->toDateString();
+
+        $dataKontrol = [
+            "request" => [
+                "noSEP" => $input["request"]["noSEP"],
+                "kodeDokter" => $input["request"]["kodeDokter"],
+                "namaDokter" => $input["request"]["namaDokter"],
+                "poliKontrol" => $input["request"]["poliKontrol"],
+                "poliKontrolNama" => $input["request"]["poliKontrolNama"],
+                "tglRencanaKontrol" => $input["request"]["tglRencanaKontrol"],
+                "user" => $this->name,
+            ],
+        ];
 
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
-            $data = $referensi->insertRencanaKontrol($data);
-            if($data["response"] !== NULL) { 
+            $data = $referensi->insertRencanaKontrol($input);
+            if($data["metaData"]["code"] === "200") { 
+                RencanaKontrolBPJS::insert([
+                    "noSuratKontrol" => $data["response"]["noSuratKontrol"],
+                    "tglSurat" => $dateNow,
+                    "noSep" => $input["request"]["noSEP"],
+                    "tglRencanaKontrol" => $data["response"]["tglRencanaKontrol"],
+                    "kdDokter" => $input["request"]["kodeDokter"],
+                    "nmDokter" => $input["request"]["namaDokter"],
+                    "kdPoli" => $input["request"]["poliKontrol"],
+                    "nmPoli" => $input["request"]["poliKontrolNama"],
+                    "namaPasien" => $input["request"]["namaPasien"],
+                    "tglLahir" => $input["request"]["tglLahir"],
+                    "noKartu" => $input["request"]["noKartu"],
+                    "jnsKontrol" => 2,
+                    "user" => $this->sub,
+                    "statusAktif" => 1,
+                    "createdAt" =>  $dateTimeNow,
+                    "updatedAt" => $dateTimeNow    
+                ]);
+
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -72,15 +103,42 @@ class RencanaKontrolController extends Controller
 
     public function updateRencanaKontrol($request = [])
     {
-        $data = $this->request->input($request);
-        $dataInput = $this->request->input($request);
+        $input = $this->request->input($request);
+        $dateTimeNow = Carbon::now()->toDateTimeString();
         $dateNow = Carbon::now()->toDateTimeString();
+
+        $dataKontrol = [
+            "request" => [
+                "noSuratKontrol" => $input["request"]["noSuratKontrol"],
+                "noSEP" => $input["request"]["noSEP"],
+                "kodeDokter" => $input["request"]["kodeDokter"],
+                "poliKontrol" => $input["request"]["poliKontrol"],
+                "tglRencanaKontrol" => $input["request"]["tglRencanaKontrol"],
+                "user" => $this->name
+            ]
+        ];
+
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
-            $data =  $referensi->updateRencanaKontrol($data);
-            if($data["response"] !== NULL) {   
+            $data =  $referensi->updateRencanaKontrol($dataKontrol);
+            if($data["metaData"]["code"] === "200") {   
+                RencanaKontrolBPJS::where("noSuratKontrol", $data["response"]["noSuratKontrol"])
+                    ->update([
+                        "tglRencanaKontrol" => $data["response"]["tglRencanaKontrol"],
+                        "kdDokter" => $input["request"]["kodeDokter"],
+                        "nmDokter" => $input["request"]["namaDokter"],
+                        "kdPoli" => $input["request"]["poliKontrol"],
+                        "nmPoli" => $input["request"]["poliKontrolNama"],
+                        // "kdDiagnosa" => $data["response"][""],
+                        // "nmDiagnosa" => $data["response"][""],
+                        "jnsKontrol" => 1,
+                        "user" => $this->sub,
+                        "statusAktif" => 1,
+                        "updatedAt" => $dateTimeNow    
+                    ]);
+
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -109,12 +167,13 @@ class RencanaKontrolController extends Controller
         $data =  [
             "request" => [
                 "t_suratkontrol" => [
-                    "noSuratKontrol" => "0301R0010320K000004",
+                    "noSuratKontrol" => $noSurat,
                     "user" =>  $this->name
                 ]
             ]
         ];
 
+        $dateTimeNow = Carbon::now()->toDateTimeString();
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
@@ -122,6 +181,13 @@ class RencanaKontrolController extends Controller
             $data = $referensi->deleteRencanaKontrol($data);
             if($data["metaData"]["message"] === "Sukses") {   
                 try {
+                    RencanaKontrolBPJS::where("noSuratKontrol", $noSurat)
+                        ->update([
+                            "user" => $this->sub,
+                            "statusAktif" => 0,
+                            "updatedAt" => $dateTimeNow    
+                        ]);
+
                     return response()->json([
                         'acknowledge' => 1,
                         'metaData'    => $data["metaData"],
@@ -156,39 +222,46 @@ class RencanaKontrolController extends Controller
 
     public function insertSPRI($request = [])
     {
-        $data = $this->request->input($request);
-        $dataInput = $this->request->input($request);
-        $dateNow = Carbon::now()->toDateTimeString();
+        $input = $this->request->input($request);
+        $dateTimeNow = Carbon::now()->toDateTimeString();
+        $dateNow = Carbon::now()->toDateString();
+
+        $dataKontrol = [
+            "request" => [
+                "noKartu" => $input["request"]["noKartu"],
+                "kodeDokter" => $input["request"]["kodeDokter"],
+                "namaDokter" => $input["request"]["namaDokter"],
+                "poliKontrol" => $input["request"]["poliKontrol"],
+                "tglRencanaKontrol" => $input["request"]["tglRencanaKontrol"],
+                "user" => $this->name,
+            ],
+        ];
+
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
-            $data = $referensi->insertSPRI($data);
-            if($data["response"] !== NULL) {   
-                $dataSPRI = [];
-                array_push($dataSPRI, [
-                    'noSPRI' => $data["response"]["noSPRI"],
-                    'noSEP' => $dataInput["request"]["noSEP"],
-                    'kdDokter' => $dataInput["request"]["kodeDokter"],
-                    'nmDokter' => $data["response"]["namaDokter"],
-                    'kdDiagnosa' => $data["response"]["namaDiagnosa"] !== NULL ? explode(" ",$data["response"]["namaDiagnosa"])[0]:NULL,
-                    'nmDiagnosa' => $data["response"]["namaDiagnosa"],
-                    'kdPoli' =>  $dataInput["request"]["poliKontrol"],
-                    'nmPoli' => $dataInput["request"]["poliKontrolNama"],
-                    "tglRencanaKontrol" => $data["response"]["tglRencanaKontrol"],
-                    'statusAktif' => 1,
-                    'user' => $this->name,
-                    'createdAt' =>  $dateNow,
-                    'updatedAt' =>  $dateNow,   
-                ]);
-
+            $data = $referensi->insertSPRI($dataKontrol);
+            if($data["metaData"]["code"] === "200") { 
                 try {
-                    DB::transaction(function () use ($dataSPRI) {
-                        SpriBPJS::insert($dataSPRI);
-                    });
-        
-                    DB::commit();
-         
+                    RencanaKontrolBPJS::insert([
+                        "noSuratKontrol" => $data["response"]["noSPRI"],
+                        "tglSurat" => $dateNow,
+                        "noSep" => $input["request"]["noSEP"],
+                        "tglRencanaKontrol" => $data["response"]["tglRencanaKontrol"],
+                        "kdDokter" => $input["request"]["kodeDokter"],
+                        "nmDokter" => $input["request"]["namaDokter"],
+                        "kdPoli" => $input["request"]["poliKontrol"],
+                        "nmPoli" => $input["request"]["poliKontrolNama"],
+                        "namaPasien" => $input["request"]["namaPasien"],
+                        "tglLahir" => $input["request"]["tglLahir"],
+                        "noKartu" => $input["request"]["noKartu"],
+                        "jnsKontrol" => 1,
+                        "user" => $this->sub,
+                        "statusAktif" => 1,
+                        "createdAt" =>  $dateTimeNow,
+                        "updatedAt" => $dateTimeNow    
+                    ]);
                     return response()->json([
                         'acknowledge' => 1,
                         'metaData'    => $data["metaData"],
@@ -196,7 +269,6 @@ class RencanaKontrolController extends Controller
                         'message'     => "BPJS CONNECTED!"
                     ], 200);
                 } catch (\Exception $e) {
-                    DB::rollback();
                     return response()->json([
                         'acknowledge' => 0,
                         'error_message' => $e->getMessage(),
@@ -223,36 +295,42 @@ class RencanaKontrolController extends Controller
 
     public function updateSPRI($request = [])
     {
-        $data = $this->request->input($request);
-        $dataInput = $this->request->input($request);
-        $dateNow = Carbon::now()->toDateTimeString();
+        $input = $this->request->input($request);
+        $dateTimeNow = Carbon::now()->toDateTimeString();
+
+        $dataKontrol = [
+            "request" => [
+                "noSPRI" => $input["request"]["noSPRI"],
+                "kodeDokter" => $input["request"]["kodeDokter"],
+                "poliKontrol" => $input["request"]["poliKontrol"],
+                "tglRencanaKontrol" => $input["request"]["tglRencanaKontrol"],
+                "user" => $this->name
+            ]
+        ];
+
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
-            $data =  $referensi->updateSPRI($data);
-            if($data["response"] !== NULL) {   
+            $data =  $referensi->updateSPRI($dataKontrol);
+            if($data["metaData"]["code"] === "200") {   
                 try {
-                    DB::transaction(function () use ($dataInput, $data, $dateNow) {
-                        SpriBPJS::where('noSPRI', $data["response"]["noSPRI"])->update([
-                            'noSPRI' => $data["response"]["noSPRI"],
-                            'noSEP' => $dataInput["request"]["noSEP"],
-                            'kdDokter' => $dataInput["request"]["kodeDokter"],
-                            'nmDokter' => $data["response"]["namaDokter"],
-                            'kdDiagnosa' => $data["response"]["namaDiagnosa"] !== NULL ? explode(" ",$data["response"]["namaDiagnosa"])[0]:NULL,
-                            'nmDiagnosa' => $data["response"]["namaDiagnosa"],
-                            'kdPoli' =>  $dataInput["request"]["poliKontrol"],
-                            'nmPoli' => $dataInput["request"]["poliKontrolNama"],
+                   
+                    RencanaKontrolBPJS::where("noSuratKontrol", $data["response"]["noSPRI"])
+                        ->update([
                             "tglRencanaKontrol" => $data["response"]["tglRencanaKontrol"],
-                            'statusAktif' => 1,
-                            'user' => $this->name,
-                            'createdAt' =>  $dateNow,
-                            'updatedAt' =>  $dateNow,   
+                            "kdDokter" => $input["request"]["kodeDokter"],
+                            "nmDokter" => $input["request"]["namaDokter"],
+                            "kdPoli" => $input["request"]["poliKontrol"],
+                            "nmPoli" => $input["request"]["poliKontrolNama"],
+                            // "kdDiagnosa" => $data["response"][""],
+                            // "nmDiagnosa" => $data["response"][""],
+                            "jnsKontrol" => 1,
+                            "user" => $this->sub,
+                            "statusAktif" => 1,
+                            "updatedAt" => $dateTimeNow    
                         ]);
-                    });
-        
-                    DB::commit();
-         
+
                     return response()->json([
                         'acknowledge' => 1,
                         'metaData'    => $data["metaData"],
@@ -260,7 +338,6 @@ class RencanaKontrolController extends Controller
                         'message'     => "BPJS CONNECTED!"
                     ], 200);
                 } catch (\Exception $e) {
-                    DB::rollback();
                     return response()->json([
                         'acknowledge' => 0,
                         'error_message' => $e->getMessage(),
@@ -291,7 +368,7 @@ class RencanaKontrolController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
             $data =  $referensi->dokterKontrol($jnsKontrol, $kdPoli, $tglRencanaKontrol);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -322,7 +399,7 @@ class RencanaKontrolController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
             $data =  $referensi->poliSpesialistik($jnsKontrol, $nomor, $tglKontrol);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -353,7 +430,7 @@ class RencanaKontrolController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
             $data =  $referensi->cariSEP($noSEP);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -384,7 +461,7 @@ class RencanaKontrolController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
             $data =  $referensi->cariNoSuratKontrol($noSurat);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -408,6 +485,59 @@ class RencanaKontrolController extends Controller
         }
     }
 
+    public function detailKontrol($noSurat)
+    {
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        $vclaim_conf = $this->connection();
+        try {
+            $cek = RencanaKontrolBPJS::where("noSuratKontrol", $noSurat)->exists();
+            $data = RencanaKontrolBPJS::from('rs_bridging_surat_kontrol as a')
+            ->select(
+                'a.noSuratKontrol',
+                'a.noKartu',
+                'a.namaPasien',
+                'b.nmDpjp',
+                'a.tglLahir',
+                'a.tglRencanaKontrol',
+                'b.diagAwal',
+                'b.nmDiagnosa',
+                'a.nmDokter',
+                'a.nmPoli'
+            )
+            ->leftJoin('rs_bridging_sep as b', 'a.noSep', '=', 'b.noSep')
+            ->where("noSuratKontrol", $noSurat)
+            ->first();
+
+            if($cek) {   
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => [
+                                        "code"=> 200,
+                                        "message" => "Sukses"
+                                    ],
+                    'data'        => $data,
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => [
+                                        "code"=> 201,
+                                        "message" => "Data tidak ditemukan!"
+                                    ],
+                    'data'        => [],
+                ], 200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'acknowledge' => 0,
+                'error_message' => $e->getMessage(),
+                'error_Line' => $e->getLine(),
+                'message'     => "Gagal!."
+            ], 500);
+        }
+    }
+
     public function dataNoSuratKontrol($tglAwal, $tglAkhir, $filter)
     {
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -415,7 +545,7 @@ class RencanaKontrolController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\RencanaKontrol($vclaim_conf);
             $data =  $referensi->dataNoSuratKontrol($tglAwal, $tglAkhir, $filter);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

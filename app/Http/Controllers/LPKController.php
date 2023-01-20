@@ -41,7 +41,7 @@ class LPKController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\LembarPengajuanKlaim($vclaim_conf);
             $data = $referensi->getDokterLPK($namaDokter);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -73,7 +73,7 @@ class LPKController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\LembarPengajuanKlaim($vclaim_conf);
             $data = $referensi->insertLPK($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -105,7 +105,7 @@ class LPKController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\LembarPengajuanKlaim($vclaim_conf);
             $data =  $referensi->updateLPK($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -137,7 +137,7 @@ class LPKController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\LembarPengajuanKlaim($vclaim_conf);
             $data = $referensi->deleteLPK($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -169,7 +169,7 @@ class LPKController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\LembarPengajuanKlaim($vclaim_conf);
             $data = $referensi->cariLPK($tglMasuk, $jnsPelayanan);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

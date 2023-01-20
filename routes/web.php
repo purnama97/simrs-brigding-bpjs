@@ -29,6 +29,12 @@ $router->group(
         $router->post('aplicaresws/bed/{kodePpk}', 'AplicareController@bedCreate');
         $router->put('aplicaresws/bed/{kodePpk}', 'AplicareController@bedUpdate');
         $router->delete('aplicaresws/bed/{kodePpk}/{kodeKelas}/{kodeRuangan}', 'AplicareController@bedDelete');
+
+        //ANTREAN ONLINE WS RS AUTH
+        $router->get('antrean/auth', 'AuthController@authenticate');
+
+        $router->post('inacbg/eKlaim/testdektrip', 'EKlaimController@testDekrip');
+        $router->post('inacbg/eklaim/testenkrip', 'EKlaimController@testEnkrip');
     }
 );
 
@@ -47,13 +53,13 @@ $router->group(
         $router->get('referensi/diagnosaprb', 'ReferensiBpjsController@diagnosaPRB');
         $router->get('referensi/obatprb/{namaObat}', 'ReferensiBpjsController@dataObat');
 
-        $router->get('BPJS/Referensi/prosedure/{prosedure}', 'ReferensiBpjsController@prosedur');
-        $router->get('BPJS/Referensi/kelasrawat', 'ReferensiBpjsController@kelasRawat');
+        $router->get('referensi/prosedure/{prosedure}', 'ReferensiBpjsController@prosedur');
+        $router->get('referensi/kelasrawat', 'ReferensiBpjsController@kelasRawat');
         $router->get('referensi/dokter/{dokter}', 'ReferensiBpjsController@dokter');
-        $router->get('BPJS/Referensi/spesialistik', 'ReferensiBpjsController@spesialistik');
-        $router->get('BPJS/Referensi/ruangrawat', 'ReferensiBpjsController@ruangrawat');
-        $router->get('BPJS/Referensi/carakeluar', 'ReferensiBpjsController@carakeluar');
-        $router->get('BPJS/Referensi/pascapulang', 'ReferensiBpjsController@pascapulang');
+        $router->get('referensi/spesialistik', 'ReferensiBpjsController@spesialistik');
+        $router->get('referensi/ruangrawat', 'ReferensiBpjsController@ruangrawat');
+        $router->get('referensi/carakeluar', 'ReferensiBpjsController@carakeluar');
+        $router->get('referensi/pascapulang', 'ReferensiBpjsController@pascapulang');
 
         // PESERTA
         $router->get('peserta/noKartu/{noKartu}/tglsep/{tglPelayananSEP}','PesertaController@getByNoKartu');
@@ -63,6 +69,8 @@ $router->group(
         $router->post('vclaim/sep','SEPController@insertSEP');
         $router->put('vclaim/sep','SEPController@updateSEP');
         $router->delete('vclaim/sep/nosep/{noSEP}','SEPController@deleteSEP');
+        $router->post('vclaim/sep/list','SEPController@listSEP');
+        $router->get('vclaim/sep/detail/nosep/{noSEP}','SEPController@detailSEP');
         $router->get('vclaim/sep/nosep/{noSEP}','SEPController@cariSEP');
         $router->get('vclaim/sep/jasaraharja/suplesi/nokartu/{noKartu}/tglpelayanan/{tglPelayananSEP}','SEPController@suplesiJasaRaharja');
         $router->get('vclaim/sep/Kllinduk/list/nokartu/{noKartu}','SEPController@dataIndukKLL');
@@ -77,9 +85,13 @@ $router->group(
         // $router->get('BPJS/VClaim/SEP','SEPController@listSEP');
         
         // RUJUKAN
-        $router->get('vclaim/rujukan/{searchBy}/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
-        $router->get('vclaim/rujukan/{searchBy}/nokartu/{noKartu}','RujukanController@cariByNoKartu');
+        $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+        $router->get('vclaim/rujukan/RS/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+        $router->get('vclaim/rujukan/nokartu/{noKartu}','RujukanController@cariByNoKartu');
         $router->get('vclaim/rujukan/{searchBy}/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
+        $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+        $router->get('vclaim/rujukan/nokartu/{noKartu}','RujukanController@cariByNoKartu');
+        $router->get('vclaim/rujukan/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
         $router->post('vclaim/rujukan','RujukanController@insertRujukan');
         $router->put('vclaim/rujukan','RujukanController@updateRujukan');
         $router->post('vclaim/rujukan/khusus','RujukanController@insertRujukanKhusus');
@@ -88,7 +100,7 @@ $router->group(
         $router->get('vclaim/rujukan/listspesialistik/ppkrujukan/{kodePPK}/tglrujukan/{tglRujuk}','RujukanController@spesialistikRujukan');
         $router->get('vclaim/rujukan/listsarana/ppkrujukan/{kodePPK}','RujukanController@saranaRujukan');
         $router->get('vclaim/rujukan/keluar/list/tglmulai/{tglMulai}/tglakhir/{tglAkhir}','RujukanController@getRujukKeluar');
-        $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+        $router->get('vclaim/rujukan/keluar/norujukan/{noRujukan}','RujukanController@cariRujukKeluar');
         $router->delete('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@deleteRujukan');
 
         // PRB
@@ -112,6 +124,7 @@ $router->group(
         $router->post('vclaim/rencanakontrol/spri','RencanaKontrolController@insertSPRI');
         $router->put('vclaim/rencanakontrol/spri','RencanaKontrolController@updateSPRI');
         $router->get('vclaim/rencanakontrol/nosep/{noSEP}','RencanaKontrolController@cariSEP');
+        $router->get('vclaim/rencanakontrol/detail/{noSurat}','RencanaKontrolController@detailKontrol');
         $router->get('vclaim/rencanakontrol/nosuratkontrol/{noSurat}','RencanaKontrolController@cariNoSuratKontrol');
         $router->get('vclaim/rencanakontrol/listrencanakontrol/tglawal/{tglAwal}/tglakhir/{tglAkhir}/filter/{filter}','RencanaKontrolController@dataNoSuratKontrol');
         $router->get('vclaim/rencanakontrol/listspesialistik/jnskontrol/{jnsKontrol}/nomor/{nomor}/tglrencanakontrol/{tglKontrol}', 'RencanaKontrolController@poliSpesialistik');
@@ -119,10 +132,10 @@ $router->group(
          
 
         // MONITORING
-        $router->get('BPJS/VClaim/Monitoring/Kunjungan/Tanggal/{tglSep}/JnsPelayanan/{jnsPelayanan}','MonitoringController@dataKunjungan');
-        $router->get('BPJS/VClaim/Monitoring/Klaim/Tanggal/{tglPulang}/JnsPelayanan/{jnsPelayanan}/Status/{statusKlaim}','MonitoringController@dataKlaim');
-        $router->get('BPJS/VClaim/Monitoring/HistoriPelayanan/NoKartu/{noKartu}/tglMulai/{tglAwal}/tglAkhir/{tglAkhir}','MonitoringController@historyPelayanan');
-        $router->get('BPJS/VClaim/Monitoring/JasaRaharja/JnsPelayanan/{jnsPelayanan}/tglMulai/{tglMulai}/tglAkhir/{tglAkhir}','MonitoringController@dataKlaimJasaRaharja');
+        $router->get('vclaim/monitoring/kunjungan/tanggal/{tglSep}/jnspelayanan/{jnsPelayanan}','MonitoringController@dataKunjungan');
+        $router->get('vclaim/monitoring/klaim/tanggal/{tglPulang}/jnspelayanan/{jnsPelayanan}/status/{statusKlaim}','MonitoringController@dataKlaim');
+        $router->get('vclaim/monitoring/historipelayanan/nokartu/{noKartu}/tglmulai/{tglAwal}/tglakhir/{tglAkhir}','MonitoringController@historyPelayanan');
+        $router->get('vclaim/monitoring/jasaraharja/jnspelayanan/{jnsPelayanan}/tglmulai/{tglMulai}/tglakhir/{tglAkhir}','MonitoringController@dataKlaimJasaRaharja');
 
         // // APLICARE
         // $router->get('aplicaresws/ref/kelas', 'AplicareController@refKelas');
@@ -131,22 +144,41 @@ $router->group(
         // $router->put('aplicaresws/bed/{kodePpk}', 'AplicareController@bedUpdate');
         // $router->delete('aplicaresws/bed/{kodePpk}/{kodeKelas}/{kodeRuangan}', 'AplicareController@bedDelete');
 
-        // ANTREAN
-        $router->get('BPJS/Antrean/ref/poli', 'AntreanController@getPoli');
-        $router->get('BPJS/Antrean/ref/dokter', 'AntreanController@getDokter');
-        $router->get('BPJS/Antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'AntreanController@getJadwalDokter');
-        $router->put('BPJS/Antrean/jadwaldokter', 'AntreanController@updateJadwalDokter');
-        $router->post('BPJS/Antrean/antrean', 'AntreanController@addAntrian');
-        $router->put('BPJS/Antrean/antrean/updatewaktu', 'AntreanController@updateWaktuAntrian');
-        $router->post('BPJS/Antrean/antrean/batal', 'AntreanController@batalAntrian');
-        $router->get('BPJS/Antrean/antrean/getlisttask', 'AntreanController@waktuTasks');
-        $router->get('BPJS/Antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'AntreanController@getDashboardTgl');
-        $router->get('BPJS/Antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'AntreanController@getDashboardBln');
+        // ANTREAN WS BPJS
+        $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
+        $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
+        $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
+        $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
+        $router->post('antrean', 'WS_BPJS_AntreanController@addAntrian');
+        $router->put('antrean', 'WS_BPJS_AntreanController@updateWaktuAntrian');
+        $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
+        $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
+        $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
+        $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
 
-        $router->post('InaCbg/EKlaim/testDektrip', 'EKlaimController@testDektrip');
-        $router->post('InaCbg/EKlaim/testEnktrip', 'EKlaimController@testEnktrip');
+      
     }
 );
+
+$router->group(
+    ['prefix' => 'api/v1/', 'middleware' => 'bpjs'],
+    function () use ($router) {
+        // ANTREAN WS RS
+        $router->post('antrean/status', 'WS_RS_AntreanController@getStatus');
+        $router->post('antrean/ambil', 'WS_RS_AntreanController@getAntrian');
+        $router->post('antrean/sisa', 'WS_RS_AntreanController@getSisaAntrian');
+        $router->post('antrean/batal', 'WS_RS_AntreanController@batalAntrian');
+        $router->post('antrean/checkin', 'WS_RS_AntreanController@checkinAntrian');
+        $router->post('antrean/infopasien', 'WS_RS_AntreanController@getInfoPasien');
+        $router->post('antrean/jadwaloperasi/rs', 'WS_RS_AntreanController@jadwalOkRS');
+        $router->post('antrean/jadwaloperasi/pasien', 'WS_RS_AntreanController@jadwalOkPasien');
+        $router->post('antrean/farmasi/ambil', 'WS_RS_AntreanController@getAntrianFarmasi');
+        $router->post('antrean/farmasi/status', 'WS_RS_AntreanController@getStatusAntrianFarmasi');
+    }
+);
+
+    
+
 
 
 

@@ -16,6 +16,7 @@ class PRBController extends Controller
     {
         $this->request = $request;
         $this->name = $this->request->auth['Credentials']->name;
+        $this->compCode = $this->request->auth['Credentials']->compCode;
     }
 
     public function connection()
@@ -41,7 +42,7 @@ class PRBController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\PRB($vclaim_conf);
             $data = $referensi->insertPRB($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -73,7 +74,7 @@ class PRBController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\PRB($vclaim_conf);
             $data =  $referensi->updatePRB($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -104,7 +105,7 @@ class PRBController extends Controller
                 "t_prb" => [  
                     "noSrb" => $noSrb,
                     "noSep" => $noSep,
-                    "user" => $this->name
+                    "user" => $this->compCode
                 ]
             ]
         ];
@@ -114,7 +115,7 @@ class PRBController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\PRB($vclaim_conf);
             $data = $referensi->deletePRB($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -146,7 +147,7 @@ class PRBController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\PRB($vclaim_conf);
             $data = $referensi->cariNomorSRB($noSRB, $noSEP);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -178,7 +179,7 @@ class PRBController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\PRB($vclaim_conf);
             $data = $referensi->cariTanggalSRB($tglAwal, $tglAkhir);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

@@ -48,7 +48,7 @@ class AplicareController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Aplicare\KetersediaanKamar($vclaim_conf);
             $data = $referensi->refKelas();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metadata"],
@@ -79,7 +79,7 @@ class AplicareController extends Controller
         $referensi = new Purnama97\Bpjs\Aplicare\KetersediaanKamar($vclaim_conf);
         $data = $referensi->bedGet($kodePpk, $start, $limit);
         try {
-             if($data["response"] !== NULL) {   
+             if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metadata"],

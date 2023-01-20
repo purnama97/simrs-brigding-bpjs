@@ -8,14 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Libraries\Helpers;
 use Carbon\Carbon;
-use App\SepBPJS;
 
 class EKlaimController extends Controller
 {
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->name = $this->request->auth['Credentials']->name;
+        // $this->name = $this->request->auth['Credentials']->name;
     }
 
     public function connection()
@@ -23,7 +22,7 @@ class EKlaimController extends Controller
 
         $vclaim_conf = [
             'key' => '736b0335d7a7dd53e514ef869b6e16953119fc28d0329fc136df8e2698f1a3ae',
-            'base_url' => 'http://localhost/E-Klaim/ws.php?mode=debug',
+            'base_url' => 'http://localhost/E-Klaim/ws.php',
             'user_key' => env('USER_KEY_BPJS'),
             'service_name' => env('SERVICE_NAME_BPJS'),
         ];
@@ -32,7 +31,7 @@ class EKlaimController extends Controller
         return $vclaim_conf;
     }
 
-    public function testEnktrip(Request $request)
+    public function testEnkrip(Request $request)
     {
         //use your own bpjs config
         $data = $request->input('request');
@@ -41,7 +40,7 @@ class EKlaimController extends Controller
         try {
             $referensi = new Purnama97\Inacbgs\InaCbgs\EKlaim($vclaim_conf);
             $data = $referensi->testEnkrip($data);
-            // if($data["response"] !== NULL) {   
+            // if($data["metaData"]["code"] === "200") {   
             //     return response()->json([
             //         'acknowledge' => 1,
             //         'metaData'    => $data["metaData"],
@@ -66,7 +65,7 @@ class EKlaimController extends Controller
         }
     }
 
-    public function testDektrip(Request $request)
+    public function testDekrip(Request $request)
     {
         //use your own bpjs config
         $data = $request->input('data');
@@ -75,7 +74,7 @@ class EKlaimController extends Controller
         try {
             $referensi = new Purnama97\Inacbgs\InaCbgs\EKlaim($vclaim_conf);
             $data = $referensi->testDekrip($data);
-            // if($data["response"] !== NULL) {   
+            // if($data["metaData"]["code"] === "200") {   
             //     return response()->json([
             //         'acknowledge' => 1,
             //         'metaData'    => $data["metaData"],
@@ -107,7 +106,7 @@ class EKlaimController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->dataKlaim($tglPulang, $jnsPelayanan, $statusKlaim);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -139,7 +138,7 @@ class EKlaimController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->historyPelayanan($noKartu, $tglAwal, $tglAkhir);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -171,7 +170,7 @@ class EKlaimController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Monitoring($vclaim_conf);
             $data = $referensi->dataKlaimJasaRaharja($jnsPelayanan, $tglMulai, $tglAkhir);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

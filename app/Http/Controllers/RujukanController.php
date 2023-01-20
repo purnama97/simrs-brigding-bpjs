@@ -41,7 +41,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->insertRujukan($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -73,7 +73,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data =  $referensi->updateRujukan($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -113,7 +113,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->deleteRujukan($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {  
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -145,7 +145,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->insertRujukanKhusus($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -177,7 +177,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data =  $referensi->updateRujukanKhusus($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -209,7 +209,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->deleteRujukanKhusus($data);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -242,7 +242,7 @@ class RujukanController extends Controller
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->spesialistikRujukan($kodePPK, $tglRujuk);
 
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -275,7 +275,7 @@ class RujukanController extends Controller
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->saranaRujukan($kodePPK);
 
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -313,7 +313,7 @@ class RujukanController extends Controller
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->cariByNoRujukan($searchBy, $noRujukan);
 
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {  
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -350,7 +350,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->cariByNoKartu($searchBy, $noKartu, false);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -387,7 +387,7 @@ class RujukanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->cariByNoKartu($searchBy, $noKartu, true);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -424,11 +424,19 @@ class RujukanController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
-            return response()->json([
-                'acknowledge' => 1,
-                'data'        => $referensi->cariByTglRujukan($searchBy, $keyword),
-                'message'     => "BPJS CONNECTED!"
-            ], 200);
+            if($data["metaData"]["code"] === "200") {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'data'        => $referensi->cariByTglRujukan($searchBy, $keyword),
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'acknowledge' => 0,
@@ -448,7 +456,7 @@ class RujukanController extends Controller
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->cariRujukanKhusus($bulan, $tahun);
 
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {  
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -480,7 +488,7 @@ class RujukanController extends Controller
              $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
              $data = $referensi->getRujukKeluar($tglMulai, $tglAkhir);
  
-             if($data["response"] !== NULL) {   
+             if($data["metaData"]["code"] === "200") {   
                  return response()->json([
                      'acknowledge' => 1,
                      'metaData'    => $data["metaData"],
@@ -512,7 +520,7 @@ class RujukanController extends Controller
             $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
             $data = $referensi->cariRujukKeluar($noRujukan);
 
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],

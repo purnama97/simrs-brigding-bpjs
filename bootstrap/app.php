@@ -79,6 +79,7 @@ $app->middleware([
  $app->routeMiddleware([
     'mguest' => App\Http\Middleware\GuestMiddleware::class,
     'auth' => App\Http\Middleware\JwtMiddleware::class,
+    'bpjs' => App\Http\Middleware\BpjsMiddleware::class,
     'publicAccess' => App\Http\Middleware\PublicAccessMiddleware::class,
 
 ]);

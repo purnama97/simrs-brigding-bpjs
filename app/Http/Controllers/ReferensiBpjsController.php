@@ -31,7 +31,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->diagnosa($diagnosa);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -63,7 +63,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->poli($poli);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -95,7 +95,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->faskes($kode_faskes, $jenis_faskes);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -127,7 +127,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->dokterDpjp($jenis_pelayanan, $tgl_pelayanan, $kode_spesialis);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -159,7 +159,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->propinsi();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -191,7 +191,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->kabupaten($kabupaten);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -223,7 +223,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->kecamatan($kecamatan);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -255,7 +255,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->diagnosaPRB();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -287,7 +287,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->obatPRB($obat);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -319,7 +319,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->procedure($prosedure);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -351,7 +351,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->kelasRawat();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -383,7 +383,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data =  $referensi->dokter($dokter);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -415,7 +415,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->spesialistik();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -447,7 +447,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->ruangrawat();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -479,7 +479,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->carakeluar();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -511,7 +511,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data =  $referensi->pascapulang();
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
@@ -543,7 +543,7 @@ class ReferensiBpjsController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\Referensi($vclaim_conf);
             $data = $referensi->obat($namaObat);
-            if($data["response"] !== NULL) {   
+            if($data["metaData"]["code"] === "200") {   
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
