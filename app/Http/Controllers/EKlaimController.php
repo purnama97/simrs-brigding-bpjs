@@ -22,7 +22,7 @@ class EKlaimController extends Controller
 
         $vclaim_conf = [
             'key' => '736b0335d7a7dd53e514ef869b6e16953119fc28d0329fc136df8e2698f1a3ae',
-            'base_url' => 'http://localhost/E-Klaim/ws.php',
+            'base_url' => 'http://localhost/E-Klaim/ws.php?mode=debug',
             'user_key' => env('USER_KEY_BPJS'),
             'service_name' => env('SERVICE_NAME_BPJS'),
         ];
@@ -39,24 +39,23 @@ class EKlaimController extends Controller
 
         try {
             $referensi = new Purnama97\Inacbgs\InaCbgs\EKlaim($vclaim_conf);
-            $data = $referensi->testEnkrip($data);
-            // if($data["metaData"]["code"] === "200") {   
-            //     return response()->json([
-            //         'acknowledge' => 1,
-            //         'metaData'    => $data["metaData"],
-            //         'data'        => $data["response"],
-            //         'message'     => "BPJS CONNECTED!"
-            //     ], 200);
-            // }else{
+            $data = $referensi->printKlaim($data);
+
+            if($data["metadata"]["code"] === 200) {   
+                // $pdf = base64_decode($data["data"]);
                 return response()->json([
-                    'acknowledge' => 0,
                     'metaData'    => $data["metadata"],
                     'data'        => $data["data"],
+                    // 'file'        => $pdf,
+                    'message'     => "INACBG CONNECTED!"
                 ], 200);
-            // }
+            }else{
+                return response()->json([
+                    'metaData'    => $data["metadata"],
+                ], 200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
-                'acknowledge' => 0,
                 'error_message' => $e->getMessage(),
                 'error_Line' => $e->getLine(),
                 'error_File' => $e->getFile(),

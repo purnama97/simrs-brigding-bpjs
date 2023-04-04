@@ -293,7 +293,7 @@ class SEPController extends Controller
             return response()->json([
                 'acknowledge' => 0,
                 'metaData'    => $data["metaData"],
-                'data'        => [],
+                'data'        => $dataSep,
             ], 200);
         }
             

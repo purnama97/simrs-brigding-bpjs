@@ -33,8 +33,34 @@ $router->group(
         //ANTREAN ONLINE WS RS AUTH
         $router->get('antrean/auth', 'AuthController@authenticate');
 
-        $router->post('inacbg/eKlaim/testdektrip', 'EKlaimController@testDekrip');
-        $router->post('inacbg/eklaim/testenkrip', 'EKlaimController@testEnkrip');
+        $router->post('inacbg/testdekrip', 'EKlaimController@testDekrip');
+        $router->get('inacbg/testenkrip', 'EKlaimController@testEnkrip');
+
+        //INTEGRASI WS INACBG
+        $router->get('inacbg/nosep/{noSEP}', 'InacbgController@printKlaim');
+        $router->post('inacbg/klaim/new', 'InacbgController@createKlaim');
+        $router->get('inacbg/klaim/list/tglmulai/{tglAwal}/tglakhir/{tglAkhir}/jenisrawat/{jnsRawat}', 'InacbgController@listKlaim');
+        $router->get('inacbg/klaim/detail/nosep/{noSEP}', 'InacbgController@detailKlaim');
+        $router->get('inacbg/klaim/status/nosep/{noSEP}', 'InacbgController@statusKlaim');
+        $router->put('inacbg/klaim/update', 'InacbgController@updateKlaim');
+        $router->delete('inacbg/klaim/delete/nosep/{noSEP}', 'InacbgController@deleteKlaim');
+        $router->post('inacbg/klaim/final', 'InacbgController@finalKlaim');
+        $router->put('inacbg/klaim/reupdate', 'InacbgController@reupdateKlaim');
+        $router->post('inacbg/klaim/send/all', 'InacbgController@sendKlaimAll');
+        $router->post('inacbg/klaim/send', 'InacbgController@sendKlaim');
+        $router->put('inacbg/pasien', 'InacbgController@updatePasien');
+        $router->post('inacbg/grouper', 'InacbgController@grouper');
+        $router->delete('inacbg/pasien/norm/{noRM}', 'InacbgController@deletePasien');
+        $router->get('inacbg/ref/diagnosa/keyword/{keyword}', 'InacbgController@searchDiagnosa');
+        $router->get('inacbg/ref/prosedur/keyword/{keyword}', 'InacbgController@searchProsedur');
+        $router->post('inacbg/klaim/pengajuan/generate', 'InacbgController@generateNomorPengajuan');
+        $router->post('inacbg/klaim/file/upload', 'InacbgController@uploadFile');
+        $router->delete('inacbg/klaim/file/nosep/{noSEP}/id/{fileId}', 'InacbgController@deleteFile');
+        $router->get('inacbg/klaim/file/nosep/{noSEP}', 'InacbgController@listFile');
+        $router->get('inacbg/grouper/diagnosa/keyword/{keyword}', 'InacbgController@searchDiagnosaInaGrouper');
+        $router->get('inacbg/grouper/prosedur/keyword/{keyword}', 'InacbgController@searchProsedurInaGrouper');
+        $router->post('inacbg/sitb/validasi', 'InacbgController@validasiSitb');
+        $router->post('inacbg/sitb/batal', 'InacbgController@batalSitb');
     }
 );
 
@@ -146,16 +172,23 @@ $router->group(
 
         // ANTREAN WS BPJS
         $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
+        $router->get('antrean/ref/poli/fp', 'WS_BPJS_AntreanController@getPoliFinger');
+        $router->get('antrean/ref/pasien/fp/identitas/{identitas}/noidentitas/{noIdentitas}', 'WS_BPJS_AntreanController@getPasienFinger');
         $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
         $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
         $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
-        $router->post('antrean', 'WS_BPJS_AntreanController@addAntrian');
-        $router->put('antrean', 'WS_BPJS_AntreanController@updateWaktuAntrian');
+        $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian');
+        $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
+        $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
         $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
         $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
         $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
         $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
 
+        $router->get('antrean/pendaftaran/tanggal/{tanggal}', 'WS_BPJS_AntreanController@getAntreanTgl');
+        $router->get('antrean/pendaftaran/kodebooking/{kodebooking}', 'WS_BPJS_AntreanController@getAntreanKdBooking');
+        $router->get('antrean/pendaftaran/aktif', 'WS_BPJS_AntreanController@getAntreanBlmDilayani');
+        $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
       
     }
 );
