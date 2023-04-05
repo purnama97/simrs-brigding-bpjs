@@ -46,42 +46,40 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
-    public function connection()
+    public function get_struk_no($tanggalperiksa)
     {
-        //use your own bpjs config
-        // $data = DB::table("rs_bpjs_config")->get();
-        $vclaim_conf = [
-            'cons_id' => env('CONS_ID_BPJS'),
-            'secret_key' => env('SECRET_KEY_BPJS'),
-            'base_url' => env('BASE_URL_BPJS'),
-            'user_key' => env('USER_KEY_BPJS'),
-            'service_name' => env('SERVICE_NAME_ANTREAN'),
-        ];
+        $datenow = Carbon::create($tanggalperiksa);
+        $date = Carbon::now()->toDateString();
+        $num =  DB::table('rs_counter_antrian')->whereDate('createdAt', $datenow)->orderBy('created_at', 'Desc')->max('kodeBooking');
 
-        return $vclaim_conf;
+        if (!empty($num)) {
+           return 'BOK' . $datenow->format('Y') . $datenow->format('m') . $datenow->format('d') . sprintf("%05s", (substr($num, 11) + 1));
+        } elseif (empty($num)) {
+            return $explode = 'BOK' . $datenow->format('Y') . $datenow->format('m') . $datenow->format('d') . sprintf("%05s", 1);
+        }
     }
 
-    public function get_struk_no($tanggalperiksa){
-			$tanggal    = explode('-', $tanggalperiksa);
-			$monthNow  = $tanggal[2];
-            $yearNow            = $tanggal[0];
-            $dayNow             = $tanggal[1];
-			$datenow    = Carbon::now()->toDateString();
+    // public function get_struk_no($tanggalperiksa){
+	// 		$tanggal    = explode('-', $tanggalperiksa);
+	// 		$monthNow  = $tanggal[2];
+    //         $yearNow            = $tanggal[0];
+    //         $dayNow             = $tanggal[1];
+	// 		$datenow    = Carbon::now()->toDateString();
 
-			$num        = DB::table('rs_counter_antrian')->whereDate('createdAt', $datenow)->max('kodeBooking');
+	// 		$num        = DB::table('rs_counter_antrian')->whereDate('createdAt', $datenow)->max('kodeBooking');
 			
-			if ($num == 0 || $num == null) {
-					$result = intval($yearNow . $monthNow . $dayNow  . sprintf('%05s', 1));
-			} else {
-					$result = intval($num + 1);
-			}
+	// 		if ($num == 0 || $num == null) {
+	// 				$result = intval($yearNow . $monthNow . $dayNow  . sprintf('%05s', 1));
+	// 		} else {
+	// 				$result = intval($num + 1);
+	// 		}
 
-			return response()->json([
-                "strukNo" => $result,
-                "acknowledge" => 1,
-                "message"    => 'True!.'
-			], 200);
-    }
+	// 		return response()->json([
+    //             "strukNo" => $result,
+    //             "acknowledge" => 1,
+    //             "message"    => 'True!.'
+	// 		], 200);
+    // }
 
 	public function counting($polyCode, $docCode, $regDate)
     {

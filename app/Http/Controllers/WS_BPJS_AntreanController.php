@@ -20,11 +20,11 @@ class WS_BPJS_AntreanController extends Controller
     public function connection()
     {
         $vclaim_conf = [
-            'cons_id' => env('CONS_ID_ANTROL_BPJS_DEV'),
-            'secret_key' => env('SECRET_KEY_ANTROL_BPJS_DEV'),
-            'base_url' => env('BASE_URL_ANTROL_BPJS_DEV'),
-            'user_key' => env('USER_KEY_ANTROL_BPJS_DEV'),
-            'service_name' => env('SERVICE_NAME_ANTROL_DEV'),
+            'cons_id' => env('APP_ENV') === 'DEVELOPMENT' ? env('CONS_ID_ANTROL_BPJS_DEV') : env('CONS_ID_ANTROL_BPJS'),
+            'secret_key' => env('APP_ENV') === 'DEVELOPMENT' ? env('SECRET_KEY_ANTROL_BPJS_DEV') : env('SECRET_KEY_ANTROL_BPJS'),
+            'base_url' => env('APP_ENV') === 'DEVELOPMENT' ? env('BASE_URL_ANTROL_BPJS_DEV') : env('BASE_URL_ANTROL_BPJS'),
+            'user_key' => env('APP_ENV') === 'DEVELOPMENT' ? env('USER_KEY_ANTROL_BPJS_DEV') : env('USER_KEY_ANTROL_BPJS'),
+            'service_name' => env('APP_ENV') === 'DEVELOPMENT' ? env('SERVICE_NAME_ANTROL_DEV') : env('SERVICE_NAME_ANTROL'),
         ];
 
         return $vclaim_conf;
@@ -221,8 +221,8 @@ class WS_BPJS_AntreanController extends Controller
         $poli = DB::table("rs_mapping_poli_asuransi")->where('kodePoli', $data["kodepoli"])->value("kodePoliAsuransi");
 
         DB::table("rs_counter_antrian")->where('kodeBooking', $data["kodeBooking"])->update(['isJKN' => $data["jenispasien"] === "JKN" ? 1:0]); 
-        $jadwal = DB::table("rs_jadwal_dokter")->where('dokter_id', $data["kodeDokter"])->first(); 
-        $antrian = DB::table("rs_counter_antrian")->where('kodeDokter', $data["kodeDokter"])->where('tanggalperiksa', $data["tanggalperiksa"]); 
+        $jadwal = DB::table("rs_jadwal_dokter")->where('dokter_id', $data["kodedokter"])->first(); 
+        $antrian = DB::table("rs_counter_antrian")->where('kodeDokter', $data["kodedokter"])->where('bookingDate', $data["tanggalperiksa"]); 
 
         $sendData = [
             "kodebooking" => $data["kodeBooking"],
@@ -243,10 +243,10 @@ class WS_BPJS_AntreanController extends Controller
             "nomorantrean" => $data["nomorantrean"],
             "angkaantrean" => $data["angkaantrean"],
             "estimasidilayani" => $data["estimasidilayani"],
-            "sisakuotajkn" => $jadwal['kuotaJkn'] - $antrian->where('isJkn', 1)->count(),
-            "kuotajkn" => $jadwal['kuotaJkn'],
-            "sisakuotanonjkn" =>$jadwal['kuotaNonJkn'] - $antrian->where('isJkn', 0)->count(),
-            "kuotanonjkn" => $jadwal['kuotaNonJkn'],
+            "sisakuotajkn" => $jadwal->kuotaJkn, - $antrian->where('isJkn', 1)->count('isJkn'),
+            "kuotajkn" => $jadwal->kuotaJkn,
+            "sisakuotanonjkn" => $jadwal->kuotaNonJkn - $antrian->where('isJkn', 0)->count('isJkn'),
+            "kuotanonjkn" => $jadwal->kuotaNonJkn,
             "keterangan" => "Peserta harap 30 menit lebih awal guna pencatatan administrasi."
         ];
 
@@ -262,7 +262,7 @@ class WS_BPJS_AntreanController extends Controller
             }else{
                 return response()->json([
                     'metaData'    => $data["metadata"],
-                    'data'        => [],
+                    'data'        => []
                 ], 200);
             }
         } catch (\Throwable $e) {

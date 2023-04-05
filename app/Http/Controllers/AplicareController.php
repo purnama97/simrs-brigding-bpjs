@@ -30,11 +30,11 @@ class AplicareController extends Controller
     public function connection()
     {
         $vclaim_conf = [
-            'cons_id' => env('CONS_ID_BPJS'),
-            'secret_key' => env('SECRET_KEY_BPJS'),
-            'base_url' => env('BASE_URL_APLICARE'),
-            'user_key' => env('USER_KEY_BPJS'),
-            'service_name' => env('SERVICE_NAME_APLICARE'),
+            'cons_id' => env('APP_ENV') === 'DEVELOPMENT' ? env('CONS_ID_BPJS_DEV') : env('CONS_ID_BPJS'),
+            'secret_key' => env('APP_ENV') === 'DEVELOPMENT' ? env('SECRET_KEY_BPJS_DEV') : env('SECRET_KEY_BPJS'),
+            'base_url' => env('APP_ENV') === 'DEVELOPMENT' ? env('BASE_URL_APLICARE_DEV') : env('BASE_URL_APLICARE'),
+            'user_key' => env('APP_ENV') === 'DEVELOPMENT' ? env('USER_KEY_BPJS_DEV') : env('USER_KEY_BPJS'),
+            'service_name' => env('APP_ENV') === 'DEVELOPMENT' ? env('SERVICE_NAME_APLICARE_DEV') : env('SERVICE_NAME_APLICARE'),
         ];
 
         return $vclaim_conf;
