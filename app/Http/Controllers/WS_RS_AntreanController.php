@@ -387,10 +387,12 @@ class WS_RS_AntreanController extends Controller
             $response = Antrian::from("rs_counter_antrian as a")
                         ->select(
                                 "a.kodeBooking",
-                                "b.namaPoliAsuransi as kodePoli",
-                                "b.namaPoliAsuransi as namaPoli",
-                                "c.kodeDokterAsuransi as kodeDokter",
-                                "c.namaDokterAsuransi as namaDokter",
+                                "a.kodePoli",
+                                "b.kodePoliAsuransi",
+                                "b.namaPoliAsuransi",
+                                "a.kodeDokter",
+                                "c.kodeDokterAsuransi",
+                                "c.namaDokterAsuransi",
                                 "a.noKartu",
                                 "a.nik",
                                 "a.noRm",
@@ -402,6 +404,7 @@ class WS_RS_AntreanController extends Controller
                                 "a.jamPraktek",
                                 "a.noReferensi",
                                 "a.jenisKunjungan",
+                                "a.estimasiDilayani",
                                 "a.isCall",
                                 "a.createdAt",
                                 "a.updatedAt"
@@ -436,11 +439,11 @@ class WS_RS_AntreanController extends Controller
                     ],
                     "response" => [
                         "nomorantrean" => $response->first()->nomorAntrian,
-                        "namapoli" => $response->first()->namaPoli,
-                        "namadokter" => $response->first()->namaDokter,
+                        "namapoli" => $response->first()->namaPoliAsuransi,
+                        "namadokter" => $response->first()->namaDokterAsuransi,
                         "sisaantrean" => $sisa,
                         "antreanpanggil" => $call === Null ? "-" : $call->nomorAntrian,
-                        "waktutunggu" => 9000,
+                        "waktutunggu" => $response->first()->estimasiDilayani,
                         "keterangan" => ""
                     ]
                 ];
