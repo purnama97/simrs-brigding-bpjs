@@ -847,36 +847,6 @@ class WS_RS_AntreanController extends Controller
                     "lastupdate" => $this->convert_date_to_mil($row->updated_at)
                 ]);
             }
-            // $data = [
-            //     "metadata" => [
-            //         "code" => 200,
-            //         "message" => "Ok"
-            //     ],
-            //     "response" =>  [
-            //         "list" => [
-            //             [
-            //                 "kodebooking" => "123456ZXC",
-            //                 "tanggaloperasi" => "2019-12-11",
-            //                 "jenistindakan" => "operasi gigi",
-            //                 "kodepoli" => "001",
-            //                 "namapoli" => "Poli Bedah Mulut",
-            //                 "terlaksana" => 1,
-            //                 "nopeserta" => "0000000924782",
-            //                 "lastupdate" => 1577417743000 
-            //             ],
-            //             [
-            //                 "kodebooking" => "67890QWE",
-            //                 "tanggaloperasi" => "2019-12-11",
-            //                 "jenistindakan" => "operasi mulut",
-            //                 "kodepoli" => "001",
-            //                 "namapoli" => "Poli Bedah Mulut",
-            //                 "terlaksana" => 0,
-            //                 "nopeserta" => "",
-            //                 "lastupdate" => 1577417743000
-            //             ]
-            //         ]
-            //     ]
-            // ];
 
             $data = [
                     "metadata" => [
@@ -912,18 +882,50 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
-    public function jadwalOkPasien()
+    public function jadwalOkPasien(Request $request)
     {
         try {
+            $nopeserta = $request->input('nopeserta');
+
+            $data = DB::table('rs_permintaan_operasi as a')
+                    ->select(
+                        "a.no_permintaan",
+                        "a.tgl_mulai",
+                        "c.nama_tindakan",
+                        "d.kodePoliAsuransi",
+                        "d.namaPoliAsuransi",
+                        "e.no_kartu",
+                        "a.updated_at"
+                    )
+                    ->leftJoin('rs_detail_permintaan_operasi as b', 'a.no_permintaan', '=', 'b.no_permintaan')
+                    ->leftJoin('rs_tindakan_kamar as c', 'b.kode_tindakan', '=', 'c.tindakan_kamar_id')
+                    ->leftJoin('rs_mapping_poli_asuransi as d', 'd.kodePoli', '=', 'c.kdPoli')
+                    ->leftJoin('rs_pasien as e', 'e.pasien_id', '=', 'a.pasien_id')
+                    ->where('e.no_kartu', $nopeserta)
+                    ->get();
+
+            $jadwal = [];
+
+            foreach($data As $row) {
+                array_push($jadwal, [
+                    "kodebooking" => $row->no_permintaan,
+                    "tanggaloperasi" => $row->tgl_mulai,
+                    "jenistindakan" => $row->nama_tindakan,
+                    "kodepoli" => $row->kodePoliAsuransi,
+                    "namapoli" => $row->namaPoliAsuransi,
+                    "terlaksana" => 1
+                ]);
+            }
+
             $data = [
-                "metadata" => [
-                    "code" => 200,
-                    "message" => "Ok"
-                ],
-                "response"=> [
-                    "norm" => "123456"
-                ],
-            ];
+                    "metadata" => [
+                        "code" => 200,
+                        "message" => "Ok"
+                    ],
+                    "response" =>  [
+                        "list" => $jadwal
+                    ]
+                ];
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
@@ -936,7 +938,7 @@ class WS_RS_AntreanController extends Controller
                         "code" => 201,
                         "message" => "Gagal"
                     ],
-                    'response'        => "Gagal memuat info pasien!.",
+                    'response'        => "Gagal memuat jadwal ok!.",
                 ], 200);
             }
         } catch (\Throwable $e) {
