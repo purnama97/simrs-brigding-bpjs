@@ -123,12 +123,45 @@ class WS_RS_AntreanController extends Controller
     public function getStatus()
     {
 			try {
+                $dateNow = Carbon::now();
 				$kodepoli = $this->request->input('kodepoli');
 				$kodedokter = $this->request->input('kodedokter');
 				$tanggalperiksa = $this->request->input('tanggalperiksa');
 				$jampraktek = $this->request->input('jampraktek');
 
 				$explodeJP = explode('-', $jampraktek);
+
+                $cek = MappingPoli::from("rs_mapping_poli_asuransi as a")
+                        ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                        ->where("a.kodePoliAsuransi", $kodepoli)
+                        ->exists();
+
+                if(!$cek) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Poli Tidak Ditemukan",
+						],
+					], 201);
+                }
+
+                if (strtotime($tanggalperiksa) < strtotime($dateNow->toDateString())) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Tanggal Periksa Tidak Berlaku",
+						],
+					], 201);
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $tanggalperiksa)){
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd",
+						],
+					], 201);
+                }
 
                 $poliId = MappingPoli::from("rs_mapping_poli_asuransi as a")
                         ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
@@ -230,7 +263,7 @@ class WS_RS_AntreanController extends Controller
 				$nomorreferensi = $this->request->input('nomorreferensi');
 				$kodeBooking = $this->get_struk_no($tanggalperiksa);
                 $jam = explode('-', $jampraktek);
-                
+
                 $poliId = MappingPoli::from("rs_mapping_poli_asuransi as a")
                         ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
                         ->where("a.kodePoliAsuransi", $kodepoli)
@@ -240,6 +273,99 @@ class WS_RS_AntreanController extends Controller
                         ->leftJoin("rs_dokter as b", "a.kodeDokter", '=', 'b.dokter_id')
                         ->where("a.kodeDokterAsuransi", $kodedokter)
                         ->value("a.kodeDokter");
+
+                $cek = Antrian::from("rs_counter_antrian as a")
+                        ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                        ->leftJoin("rs_mapping_poli_asuransi as c", "a.kodePoli", '=', 'c.kodePoli')
+                        ->where("c.kodePoliAsuransi", $kodepoli)
+                        ->where("a.bookingDate", $tanggalperiksa)
+                        ->where("a.noKartu", $nomorkartu)
+                        ->where("a.isCancel", 0)
+                        ->exists();
+
+                if($cek) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Nomor Antrean Hanya Dapat Diambil 1 Kali Pada Tanggal Yang Sama",
+						],
+					], 201);
+                }
+
+                $sttPoli = MappingPoli::from("rs_mapping_poli_asuransi as a")
+                        ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                        ->where("a.kodePoliAsuransi", $kodepoli)
+                        ->where("b.status_aktif", 0)
+                        ->exists();
+
+                if($sttPoli) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 201,
+                            "message" => "Pendaftaran ke Poli Ini Sedang Tutup",
+                        ],
+                    ], 201);
+                }
+
+                $cekJadwal = JadwalDokter::where('poli_id', $poliId)
+								->where('dokter_id', $dokterId)
+								->where('buka', $jam[0])
+								->where('tutup', $jam[1])
+								->exists();
+
+                if(!$cekJadwal) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 201,
+                            "message" => "Jadwal Dokter Tersebut Belum Tersedia, Silahkan Reschedule Tanggal dan Jam Praktek Lainnya",
+                        ],
+                    ], 201);
+                }
+
+                $cekJam = JadwalDokter::where('poli_id', $poliId)
+								->where('dokter_id', $dokterId)
+								->whereTime('tutup','<', $dateNow->format('H:i'))
+								->exists();
+
+                if($cekJam) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 201,
+                            "message" => "Pendaftaran Ke Poli (nama poli) Sudah Tutup ",
+                        ],
+                    ], 201);
+                }
+
+                $cekPasien = DB::table('rs_pasien')
+                            ->where('pasien_id', $norm)
+                            ->exists();
+
+                if(!$cekPasien) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 202,
+                            "message" => "Data pasien ini tidak ditemukan, silahkan Melakukan Registrasi Pasien Baru",
+                        ],
+                    ], 202);
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $tanggalperiksa)){
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd",
+						],
+					], 201);
+                }
+
+                if (strtotime($tanggalperiksa) < strtotime($dateNow->toDateString())) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Tanggal Periksa Tidak Berlaku",
+						],
+					], 201);
+                }
 
                 $noAntrian = $this->counting($poliId, $dokterId, $tanggalperiksa)->getData();
 
@@ -273,16 +399,6 @@ class WS_RS_AntreanController extends Controller
 								->where('buka', $jam[0])
 								->where('tutup', $jam[1])
 								->first();
-
-                if(!$jadwal) {
-                    return response()->json([
-                        'metaData'    => [
-                            "code" => 201,
-                            "message" => "Gagal"
-                        ],
-                        'response' => "Jadwal Tidak Tersedia!.",
-                    ], 200);
-                }
 			
 
                 Antrian::insert($request);
@@ -384,6 +500,20 @@ class WS_RS_AntreanController extends Controller
         try {
 
             $kodeBooking = $this->request->input('kodebooking');
+
+            $cek = Antrian::from("rs_counter_antrian as a")
+                    ->where("a.kodeBooking", $kodeBooking)
+                    ->exists();
+
+            if(!$cek) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Antrean Tidak Ditemukan",
+                    ],
+                ], 201);
+            }
+
             $response = Antrian::from("rs_counter_antrian as a")
                         ->select(
                                 "a.kodeBooking",
@@ -478,6 +608,46 @@ class WS_RS_AntreanController extends Controller
         $keterangan = $this->request->input('keterangan');
         $dateNow = Carbon::now();
         try {
+
+            $cekValid = Antrian::where('kodeBooking', $kodeBooking)
+                    ->whereDate('bookingDate','<', $dateNow->toDateString())
+                    ->exists();
+
+            if($cekValid) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Antrean Tidak Ditemukan ",
+                    ],
+                ], 201);
+            }
+
+            $cekCancel= Antrian::where('kodeBooking', $kodeBooking)
+                        ->where('isCancel', 1)
+                        ->exists();
+
+            if($cekCancel) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Antrean Tidak Ditemukan atau Sudah Dibatalkan",
+                    ],
+                ], 201);
+            }
+
+            $cekDilayani = Antrian::where('kodeBooking', $kodeBooking)
+                    ->where('isCheckIn', 1)
+                    ->exists();
+
+            if($cekDilayani) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Pasien Sudah Dilayani, Antrean Tidak Dapat Dibatalkan",
+                    ],
+                ], 201);
+            }
+
             Antrian::where("kodeBooking", $kodeBooking)
                     ->update([
                         "isCancel" => 1,
@@ -630,39 +800,93 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
-    public function jadwalOkRS()
+    public function jadwalOkRS(Request $request)
     {
         try {
+            $tanggalawal = $request->input('tanggalawal');
+            $tanggalakhir = $request->input('tanggalakhir');
+
+
+            if (strtotime($tanggalakhir) < strtotime($tanggalawal)) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Tanggal Akhir Tidak Boleh Lebih Kecil dari Tanggal Awal",
+                    ],
+                ], 201);
+            }
+
+            $data = DB::table('rs_permintaan_operasi as a')
+                    ->select(
+                        "a.no_permintaan",
+                        "a.tgl_mulai",
+                        "c.nama_tindakan",
+                        "d.kodePoliAsuransi",
+                        "d.namaPoliAsuransi",
+                        "e.no_kartu",
+                        "a.updated_at"
+                    )
+                    ->leftJoin('rs_detail_permintaan_operasi as b', 'a.no_permintaan', '=', 'b.no_permintaan')
+                    ->leftJoin('rs_tindakan_kamar as c', 'b.kode_tindakan', '=', 'c.tindakan_kamar_id')
+                    ->leftJoin('rs_mapping_poli_asuransi as d', 'd.kodePoli', '=', 'c.kdPoli')
+                    ->leftJoin('rs_pasien as e', 'e.pasien_id', '=', 'a.pasien_id')
+                    ->whereBetween('a.tgl_mulai', [$tanggalawal, $tanggalakhir])
+                    ->get();
+
+            $jadwal = [];
+
+            foreach($data As $row) {
+                array_push($jadwal, [
+                    "kodebooking" => $row->no_permintaan,
+                    "tanggaloperasi" => $row->tgl_mulai,
+                    "jenistindakan" => $row->nama_tindakan,
+                    "kodepoli" => $row->kodePoliAsuransi,
+                    "namapoli" => $row->namaPoliAsuransi,
+                    "terlaksana" => 1,
+                    "nopeserta" => $row->no_kartu,
+                    "lastupdate" => $this->convert_date_to_mil($row->updated_at)
+                ]);
+            }
+            // $data = [
+            //     "metadata" => [
+            //         "code" => 200,
+            //         "message" => "Ok"
+            //     ],
+            //     "response" =>  [
+            //         "list" => [
+            //             [
+            //                 "kodebooking" => "123456ZXC",
+            //                 "tanggaloperasi" => "2019-12-11",
+            //                 "jenistindakan" => "operasi gigi",
+            //                 "kodepoli" => "001",
+            //                 "namapoli" => "Poli Bedah Mulut",
+            //                 "terlaksana" => 1,
+            //                 "nopeserta" => "0000000924782",
+            //                 "lastupdate" => 1577417743000 
+            //             ],
+            //             [
+            //                 "kodebooking" => "67890QWE",
+            //                 "tanggaloperasi" => "2019-12-11",
+            //                 "jenistindakan" => "operasi mulut",
+            //                 "kodepoli" => "001",
+            //                 "namapoli" => "Poli Bedah Mulut",
+            //                 "terlaksana" => 0,
+            //                 "nopeserta" => "",
+            //                 "lastupdate" => 1577417743000
+            //             ]
+            //         ]
+            //     ]
+            // ];
+
             $data = [
-                "metadata" => [
-                    "code" => 200,
-                    "message" => "Ok"
-                ],
-                "response" =>  [
-                    "list" => [
-                        [
-                            "kodebooking" => "123456ZXC",
-                            "tanggaloperasi" => "2019-12-11",
-                            "jenistindakan" => "operasi gigi",
-                            "kodepoli" => "001",
-                            "namapoli" => "Poli Bedah Mulut",
-                            "terlaksana" => 1,
-                            "nopeserta" => "0000000924782",
-                            "lastupdate" => 1577417743000 
-                        ],
-                        [
-                            "kodebooking" => "67890QWE",
-                            "tanggaloperasi" => "2019-12-11",
-                            "jenistindakan" => "operasi mulut",
-                            "kodepoli" => "001",
-                            "namapoli" => "Poli Bedah Mulut",
-                            "terlaksana" => 0,
-                            "nopeserta" => "",
-                            "lastupdate" => 1577417743000
-                        ]
+                    "metadata" => [
+                        "code" => 200,
+                        "message" => "Ok"
+                    ],
+                    "response" =>  [
+                        "list" => $jadwal
                     ]
-                ]
-            ];
+                ];
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
@@ -675,7 +899,7 @@ class WS_RS_AntreanController extends Controller
                         "code" => 201,
                         "message" => "Gagal"
                     ],
-                    'response'        => "Gagal memuat info pasien!.",
+                    'response'        => "Gagal memuat jadwal ok!.",
                 ], 200);
             }
         } catch (\Throwable $e) {

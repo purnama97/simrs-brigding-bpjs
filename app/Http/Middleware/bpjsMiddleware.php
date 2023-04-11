@@ -32,10 +32,11 @@ class BpjsMiddleware
             $credentials = JWT::decode($token, $key, array('HS256'));
         } catch (ExpiredException $e) {
             return response()->json([
-                'acknowledge' => 0,
-                'message' => 'Provided token is expired.',
-                'isLogOut' => 1
-            ], 200);
+                "metaData"  => [
+                    "code" => 201,
+                    "message" => "Token Expired"
+                  ]
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'acknowledge' => 0,

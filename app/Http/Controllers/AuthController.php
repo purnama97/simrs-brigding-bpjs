@@ -88,13 +88,11 @@ class AuthController extends BaseController
    
     if (!$user) {
       return response()->json([
-
         "metaData"  => [
-          "code" => 401,
-          "message" => "Unauthorized"
-      ],
-      "response"  => "Username does not exist, Or you'r account is not Activeds!",
-      ], 200);
+          "code" => 201,
+          "message" => "Username atau Password Tidak Sesuai"
+        ]
+      ], 201);
     }
     // // Verify the password and generate the token
     if ($this->request->header('x-password') === $user->password) {
@@ -110,11 +108,10 @@ class AuthController extends BaseController
     }else{
         return response()->json([
             "metaData"  => [
-                "code" => 401,
-                "message" => "Unauthorized"
-            ],
-            "response"  => "Username and password not match!",
-          ], 401);
+              "code" => 201,
+              "message" => "Username atau Password Tidak Sesuai"
+            ]
+          ], 201);
     }
   }
 }
