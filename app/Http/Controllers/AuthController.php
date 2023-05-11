@@ -88,7 +88,7 @@ class AuthController extends BaseController
    
     if (!$user) {
       return response()->json([
-        "metaData"  => [
+        "metadata"  => [
           "code" => 201,
           "message" => "Username atau Password Tidak Sesuai"
         ]
@@ -97,7 +97,7 @@ class AuthController extends BaseController
     // // Verify the password and generate the token
     if ($this->request->header('x-password') === $user->password) {
       return response()->json([
-        "metaData"  => [
+        "metadata"  => [
             "code" => 200,
             "message" => "Ok"
         ],
@@ -107,7 +107,7 @@ class AuthController extends BaseController
       ], 200);
     }else{
         return response()->json([
-            "metaData"  => [
+            "metadata"  => [
               "code" => 201,
               "message" => "Username atau Password Tidak Sesuai"
             ]

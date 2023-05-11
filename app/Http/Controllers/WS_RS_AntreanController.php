@@ -473,12 +473,12 @@ class WS_RS_AntreanController extends Controller
 								];
 
 						return response()->json([
-                            'metaData'    => $data["metadata"],
+                            'metadata'    => $data["metadata"],
                             'response'        => $data["response"]
 						], 200);
 				}else{
 						return response()->json([
-                            'metaData'    => [
+                            'metadata'    => [
                                 "code" => 201,
                                 "message" => "Gagal"
                             ],
@@ -579,12 +579,12 @@ class WS_RS_AntreanController extends Controller
                 ];
 
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'        => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal",
                         "data" => $response->get()
@@ -660,14 +660,14 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data) > 0) {   
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 200,
                         "message" => "Ok"
                     ],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
@@ -701,14 +701,14 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data) > 0) {   
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 200,
                         "message" => "Ok"
                     ],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
@@ -778,12 +778,12 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'    => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                             "code" => 201,
                             "message" => "Gagal"
                     ],
@@ -860,12 +860,12 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'    => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
@@ -929,12 +929,12 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'    => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
@@ -969,12 +969,12 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'    => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
@@ -1010,12 +1010,12 @@ class WS_RS_AntreanController extends Controller
 
             if(sizeof($data["metadata"]) > 0) {   
                 return response()->json([
-                    'metaData'    => $data["metadata"],
+                    'metadata'    => $data["metadata"],
                     'response'    => $data["response"],
                 ], 200);
             }else{
                 return response()->json([
-                    'metaData'    => [
+                    'metadata'    => [
                         "code" => 201,
                         "message" => "Gagal"
                     ],
