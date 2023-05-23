@@ -46,6 +46,55 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
+    private function generate_batch_id_pasien()
+    {
+        $data = Pasien::from('rs_pasien')
+            ->select(
+                'batch_id',
+                'urutan_id'
+            )
+            ->orderBy('pasien_id', 'DESC')
+            ->first();
+
+        if (empty($data)) {
+            $result = 1;
+            return $result;
+        } elseif (!empty($data)) {
+            if ($data->urutan_id == '99999999') {
+                $result = $data->batch_id + 1;
+                return $result;
+            } else {
+                $result = $data->batch_id;
+                return $result;
+            }
+        }
+    }
+
+    private function generate_urutan_id_pasien()
+    {
+        $data = Pasien::from('rs_pasien')
+            ->select(
+                'batch_id',
+                'urutan_id'
+            )
+            ->orderBy('pasien_id', 'DESC')
+            ->first();
+
+        if (empty($data)) {
+            $result = '00000001';
+            return $result;
+        } elseif (!empty($data)) {
+
+            if ($data->urutan_id == '99999999') {
+                $result = '00000001';
+                return $result;
+            } else {
+                $result = sprintf('%08s', $data->urutan_id + 1);
+                return $result;
+            }
+        }
+    }
+
     public function get_struk_no($tanggalperiksa)
     {
         $datenow = Carbon::create($tanggalperiksa);
@@ -322,9 +371,10 @@ class WS_RS_AntreanController extends Controller
                     ], 201);
                 }
 
+                // cek jam jangan time now
                 $cekJam = JadwalDokter::where('poli_id', $poliId)
 								->where('dokter_id', $dokterId)
-								->whereTime('tutup','<', $dateNow->format('H:i'))
+								->whereTime('tutup','>', $dateNow->format('H:i'))
 								->exists();
 
                 if($cekJam) {
@@ -727,44 +777,98 @@ class WS_RS_AntreanController extends Controller
 
     public function getInfoPasien()
     {
+        $date = Carbon::now()->toDateTimeString();
         try {
+            // {
+            //     "nomorkartu": "00012345678",
+            //     "nik": "3212345678987654",
+            //     "nomorkk": "3212345678987654",
+            //     "nama": "sumarsono",
+            //     "jeniskelamin": "L",
+            //     "tanggallahir": "1985-03-01",
+            //     "nohp": "085635228888",
+            //     "alamat": "alamat yang muncul merupakan alamat lengkap",
+            //     "kodeprop": "11",
+            //     "namaprop": "Jawa Barat",
+            //     "kodedati2": "0120",
+            //     "namadati2": "Kab. Bandung",
+            //     "kodekec": "1319",
+            //     "namakec": "Soreang",
+            //     "kodekel": "D2105",
+            //     "namakel": "Cingcin",
+            //     "rw": "001",
+            //     "rt": "013"
+            //  }
 
+            if(Pasien::where("no_ktp", $this->request->input("nik"))->exists()){
+                $noRm = Pasien::from("rs_pasien")->where("no_ktp", $this->request->input("nik"))->value("pasien_id");
+
+                $data = [
+                    "metadata" => [
+                        "code" => 200,
+                        "message" => "Ok"
+                    ],
+                    "response"=> [
+                        "norm" => $noRm
+                    ],
+                ];
+
+                if(sizeof($data["metadata"]) > 0) {   
+                    return response()->json([
+                        'metadata'    => $data["metadata"],
+                        'response'    => $data["response"],
+                    ], 200);
+                }else{
+                    return response()->json([
+                        'metadata'    => [
+                                "code" => 201,
+                                "message" => "Gagal"
+                        ],
+                        'response'        => "Gagal memuat info pasien!.",
+                    ], 200);
+                }
+            }
+             
             Pasien::insert([
-                'nama_pasien' ,
-                'no_ktp',
-                'salut',
-                'alamat',
-                'provinsi_id',
-                'kota_kab_id',
-                'kecamatan_id',
-                'kelurahan_id',
-                'rt',
-                'rw',
-                'kode_pos',
-                'tmp_lahir',
-                'tgl_lahir',
-                'agama',
-                'pendidikan',
-                'gol_darah',
-                'telp',
-                'hp',
-                'pekerjaan_id',
-                'ibu',
-                'pasangan',
-                'jk',
-                'status_pasien',
-                'created_at',
-                'updated_at',
-                'status_aktif',
-                'asuransi',
-                'no_kartu',
-                'pasien_id',
-                'email',
-                'ayah',
-                'exp_kartu',
-                'pj_pasien',
-                'berkas_rm'
+                'pasien_id' => $this->generate_batch_id_pasien() . '-' . $this->generate_urutan_id_pasien(),
+                'nama_pasien' => $this->request->input("nama"),
+                'no_ktp' => $this->request->input("nik"),
+                'salut' => "",
+                'alamat' => $this->request->input("alamat"),
+                'provinsi_id' => "",
+                'kota_kab_id' => "",
+                'kecamatan_id' => "",
+                'kelurahan_id' => "",
+                'rt' => "",
+                'rw' => "",
+                'kode_pos' => "",
+                'tmp_lahir' => "",
+                'tgl_lahir' => $this->request->input("tanggallahir"),
+                'agama' => "",
+                'pendidikan' => "",
+                'gol_darah' => "",
+                'telp' => "",
+                'hp' => $this->request->input("nohp"),
+                'pekerjaan_id' => "",
+                'ibu' => "",
+                'pasangan' => "",
+                'jk'=> $this->request->input("jeniskelamin"),
+                'status_pasien' => "PASIEN BARU",
+                'created_at' => $date,
+                'updated_at' => $date,
+                'status_aktif' => "",
+                'asuransi' => "",
+                'no_kartu' => $this->request->input("nomorkartu"),
+                'email' => "",
+                'ayah' => "",
+                'exp_kartu' => "",
+                'pj_pasien' => "",
+                'berkas_rm' => "",
+                'batch_id' => $this->generate_batch_id_pasien(),
+                'urutan_id' => $this->generate_urutan_id_pasien()
             ]);
+
+            $noRm = Pasien::from("rs_pasien")->where("created_at", $date)->value("pasien_id");
 
             $data = [
                 "metadata" => [
@@ -772,7 +876,7 @@ class WS_RS_AntreanController extends Controller
                     "message" => "Ok"
                 ],
                 "response"=> [
-                    "norm" => "123456"
+                    "norm" => $noRm
                 ],
             ];
 
