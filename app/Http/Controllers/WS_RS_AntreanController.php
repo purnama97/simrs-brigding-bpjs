@@ -46,6 +46,13 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
+    public function count_wait_time($jml){
+        $spm = 600;
+
+        $result = $spm * $jml;
+        return $result;
+    }
+
     private function generate_batch_id_pasien()
     {
         $data = Pasien::from('rs_pasien')
@@ -99,7 +106,7 @@ class WS_RS_AntreanController extends Controller
     {
         $datenow = Carbon::create($tanggalperiksa);
         $date = Carbon::now()->toDateString();
-        $num =  DB::table('rs_counter_antrian')->whereDate('createdAt', $datenow)->orderBy('created_at', 'Desc')->max('kodeBooking');
+        $num =  DB::table('rs_counter_antrian')->whereDate('bookingDate', $datenow)->orderBy('created_at', 'Desc')->max('kodeBooking');
 
         if (!empty($num)) {
            return 'BOK' . $datenow->format('Y') . $datenow->format('m') . $datenow->format('d') . sprintf("%05s", (substr($num, 11) + 1));
@@ -372,19 +379,19 @@ class WS_RS_AntreanController extends Controller
                 }
 
                 // cek jam jangan time now
-                $cekJam = JadwalDokter::where('poli_id', $poliId)
-								->where('dokter_id', $dokterId)
-								->whereTime('tutup','>', $dateNow->format('H:i'))
-								->exists();
+                // $cekJam = JadwalDokter::where('poli_id', $poliId)
+				// 				->where('dokter_id', $dokterId)
+				// 				->whereTime('tutup','<', $dateNow->format('H:i'))
+				// 				->exists();
 
-                if($cekJam) {
-                    return response()->json([
-                        "metadata" => [
-                            "code" => 201,
-                            "message" => "Pendaftaran Ke Poli (nama poli) Sudah Tutup ",
-                        ],
-                    ], 201);
-                }
+                // if($cekJam) {
+                //     return response()->json([
+                //         "metadata" => [
+                //             "code" => 201,
+                //             "message" => "Pendaftaran Ke Poli Jiwa Sudah Tutup ",
+                //         ],
+                //     ], 201);
+                // }
 
                 $cekPasien = DB::table('rs_pasien')
                             ->where('pasien_id', $norm)
@@ -419,6 +426,14 @@ class WS_RS_AntreanController extends Controller
 
                 $noAntrian = $this->counting($poliId, $dokterId, $tanggalperiksa)->getData();
 
+                $sisa = Antrian::from("rs_counter_antrian as a")
+                                        ->where("a.bookingDate", $tanggalperiksa)
+                                        ->where("a.jamPraktek", $jampraktek)
+                                        ->where("a.kodePoli", $poliId)
+                                        ->where("a.kodeDokter", $dokterId)
+                                        ->where("a.isCall", 0)
+                                        ->count();
+
 				$request = [
 					"kodeBooking" => $kodeBooking,
 					"kodePoli" => $poliId,
@@ -439,7 +454,8 @@ class WS_RS_AntreanController extends Controller
 					"isCallOn" => 0,
 					"isCheckIn" => 0,
 					"isOnsite" => 0,
-                    "estimasiDilayani" => $this->count_time($tanggalperiksa, $jam[0], $noAntrian->count),
+                    // "estimasiDilayani" => $this->count_time($tanggalperiksa, $jam[0], $noAntrian->count),
+                    "estimasiDilayani" => $this->count_wait_time($sisa),
 					"createdAt" => $dateNow->toDateTimeString(),
 					"updatedAt" => $dateNow->toDateTimeString()
 				];
@@ -513,7 +529,7 @@ class WS_RS_AntreanController extends Controller
                                         "norm" => $norm,
                                         "namapoli" => $response->first()->namaPoli,
                                         "namadokter" => $response->first()->namaDokter,
-                                        "estimasiDilayani" => $response->first()->estimasiDilayani,
+                                        "estimasiDilayani" => intval($response->first()->estimasiDilayani),
                                         "sisakuotajkn" => $jadwal->kuotaJkn - $JmlJkn->count(),
                                         "kuotajkn" => $jadwal->kuotaJkn,
                                         "sisakuotanonjkn" => $jadwal->kuotaNonJkn - $JmlNonJkn->count(),
@@ -623,7 +639,7 @@ class WS_RS_AntreanController extends Controller
                         "namadokter" => $response->first()->namaDokterAsuransi,
                         "sisaantrean" => $sisa,
                         "antreanpanggil" => $call === Null ? "-" : $call->nomorAntrian,
-                        "waktutunggu" => $response->first()->estimasiDilayani,
+                        "waktutunggu" => intval($response->first()->estimasiDilayani),
                         "keterangan" => ""
                     ]
                 ];
@@ -927,6 +943,7 @@ class WS_RS_AntreanController extends Controller
                         "c.nama_tindakan",
                         "d.kodePoliAsuransi",
                         "d.namaPoliAsuransi",
+                        "a.status_operasi",
                         "e.no_kartu",
                         "a.updated_at"
                     )
@@ -946,7 +963,7 @@ class WS_RS_AntreanController extends Controller
                     "jenistindakan" => $row->nama_tindakan,
                     "kodepoli" => $row->kodePoliAsuransi,
                     "namapoli" => $row->namaPoliAsuransi,
-                    "terlaksana" => 1,
+                    "terlaksana" => $row->status_operasi === "Tunggu" ? 0 : 1,
                     "nopeserta" => $row->no_kartu,
                     "lastupdate" => $this->convert_date_to_mil($row->updated_at)
                 ]);
