@@ -378,21 +378,6 @@ class WS_RS_AntreanController extends Controller
                     ], 201);
                 }
 
-                // cek jam jangan time now
-                // $cekJam = JadwalDokter::where('poli_id', $poliId)
-				// 				->where('dokter_id', $dokterId)
-				// 				->whereTime('tutup','<', $dateNow->format('H:i'))
-				// 				->exists();
-
-                // if($cekJam) {
-                //     return response()->json([
-                //         "metadata" => [
-                //             "code" => 201,
-                //             "message" => "Pendaftaran Ke Poli Jiwa Sudah Tutup ",
-                //         ],
-                //     ], 201);
-                // }
-
                 $cekPasien = DB::table('rs_pasien')
                             ->where('pasien_id', $norm)
                             ->exists();
@@ -454,8 +439,8 @@ class WS_RS_AntreanController extends Controller
 					"isCallOn" => 0,
 					"isCheckIn" => 0,
 					"isOnsite" => 0,
-                    // "estimasiDilayani" => $this->count_time($tanggalperiksa, $jam[0], $noAntrian->count),
-                    "estimasiDilayani" => $this->count_wait_time($sisa),
+                    "estimasidilayani" => $this->count_time($tanggalperiksa, $jam[0], $noAntrian->count),
+                    // "estimasiDilayani" => $this->count_wait_time($sisa),
 					"createdAt" => $dateNow->toDateTimeString(),
 					"updatedAt" => $dateNow->toDateTimeString()
 				];
@@ -529,11 +514,11 @@ class WS_RS_AntreanController extends Controller
                                         "norm" => $norm,
                                         "namapoli" => $response->first()->namaPoli,
                                         "namadokter" => $response->first()->namaDokter,
-                                        "estimasiDilayani" => intval($response->first()->estimasiDilayani),
-                                        "sisakuotajkn" => $jadwal->kuotaJkn - $JmlJkn->count(),
-                                        "kuotajkn" => $jadwal->kuotaJkn,
-                                        "sisakuotanonjkn" => $jadwal->kuotaNonJkn - $JmlNonJkn->count(),
-                                        "kuotanonjkn" => $jadwal->kuotaNonJkn,
+                                        "estimasidilayani" => intval($response->first()->estimasiDilayani),
+                                        "sisakuotajkn" =>  intval($jadwal->kuotaJkn - $JmlJkn->count()),
+                                        "kuotajkn" =>  intval($jadwal->kuotaJkn),
+                                        "sisakuotanonjkn" =>  intval($jadwal->kuotaNonJkn - $JmlNonJkn->count()),
+                                        "kuotanonjkn" =>  intval($jadwal->kuotaNonJkn),
                                         "keterangan" => "Peserta harap 60 menit lebih awal guna pencatatan administrasi."
                                     ],
 								];
@@ -639,7 +624,8 @@ class WS_RS_AntreanController extends Controller
                         "namadokter" => $response->first()->namaDokterAsuransi,
                         "sisaantrean" => $sisa,
                         "antreanpanggil" => $call === Null ? "-" : $call->nomorAntrian,
-                        "waktutunggu" => intval($response->first()->estimasiDilayani),
+                        // "waktutunggu" => intval($response->first()->estimasiDilayani),
+                        "waktutunggu" => intval($this->count_wait_time($sisa)),
                         "keterangan" => ""
                     ]
                 ];
@@ -1151,5 +1137,248 @@ class WS_RS_AntreanController extends Controller
                 'message'     => "Gagal!."
             ], 500);
         }
+    }
+
+    public function getAntrianManual()
+    {
+			try {
+				$dateNow = Carbon::now();
+				$nomorkartu = $this->request->input('nomorkartu');
+				$nik = $this->request->input('nik');
+				$nohp = $this->request->input('nohp');
+				$kodepoli = $this->request->input('kodepoli');
+				$norm = $this->request->input('norm');
+				$tanggalperiksa = $this->request->input('tanggalperiksa');
+				$kodedokter = $this->request->input('kodedokter');
+				$jampraktek = $this->request->input('jampraktek');
+				$jeniskunjungan = $this->request->input('jeniskunjungan');
+				$nomorreferensi = $this->request->input('nomorreferensi');
+				$kodeBooking = $this->get_struk_no($tanggalperiksa);
+                $jam = explode('-', $jampraktek);
+
+                // $poliId = MappingPoli::from("rs_mapping_poli_asuransi as a")
+                //         ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                //         ->where("a.kodePoliAsuransi", $kodepoli)
+                //         ->value("a.kodePoli");
+
+                // $dokterId = MappingDokter::from("rs_mapping_dokter_asuransi as a")
+                //         ->leftJoin("rs_dokter as b", "a.kodeDokter", '=', 'b.dokter_id')
+                //         ->where("a.kodeDokterAsuransi", $kodedokter)
+                //         ->value("a.kodeDokter");
+
+                $cek = Antrian::from("rs_counter_antrian as a")
+                        ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                        ->leftJoin("rs_mapping_poli_asuransi as c", "a.kodePoli", '=', 'c.kodePoli')
+                        ->where("c.kodePoli", $kodepoli)
+                        ->where("a.bookingDate", $tanggalperiksa)
+                        ->where("a.noKartu", $nomorkartu)
+                        ->where("a.isCancel", 0)
+                        ->exists();
+
+                if($cek) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Nomor Antrean Hanya Dapat Diambil 1 Kali Pada Tanggal Yang Sama",
+						],
+					], 201);
+                }
+
+                $sttPoli = MappingPoli::from("rs_mapping_poli_asuransi as a")
+                        ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
+                        ->where("a.kodePoli", $kodepoli)
+                        ->where("b.status_aktif", 0)
+                        ->exists();
+
+                if($sttPoli) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 201,
+                            "message" => "Pendaftaran ke Poli Ini Sedang Tutup",
+                        ],
+                    ], 201);
+                }
+
+                $cekJadwal = JadwalDokter::where('poli_id', $kodepoli)
+								->where('dokter_id', $kodedokter)
+								// ->where('buka', $jam[0])
+								// ->where('tutup', $jam[1])
+								->exists();
+
+                if(!$cekJadwal) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 201,
+                            "message" => "Jadwal Dokter Tersebut Belum Tersedia, Silahkan Reschedule Tanggal dan Jam Praktek Lainnya",
+                        ],
+                    ], 201);
+                }
+
+                $cekPasien = DB::table('rs_pasien')
+                            ->where('pasien_id', $norm)
+                            ->exists();
+
+                if(!$cekPasien) {
+                    return response()->json([
+                        "metadata" => [
+                            "code" => 202,
+                            "message" => "Data pasien ini tidak ditemukan, silahkan Melakukan Registrasi Pasien Baru",
+                        ],
+                    ], 202);
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $tanggalperiksa)){
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd",
+						],
+					], 201);
+                }
+
+                if (strtotime($tanggalperiksa) < strtotime($dateNow->toDateString())) {
+                    return response()->json([
+						"metadata" => [
+							"code" => 201,
+							"message" => "Tanggal Periksa Tidak Berlaku",
+						],
+					], 201);
+                }
+
+                $noAntrian = $this->counting($kodepoli, $kodedokter, $tanggalperiksa)->getData();
+
+                $sisa = Antrian::from("rs_counter_antrian as a")
+                                        ->where("a.bookingDate", $tanggalperiksa)
+                                        ->where("a.jamPraktek", $jampraktek)
+                                        ->where("a.kodePoli", $kodepoli)
+                                        ->where("a.kodeDokter", $kodedokter)
+                                        ->where("a.isCall", 0)
+                                        ->count();
+
+				$request = [
+					"kodeBooking" => $kodeBooking,
+					"kodePoli" => $kodepoli,
+					"kodeDokter" => $kodedokter,
+					"noKartu" => $nomorkartu,
+					"nik" => $nik,
+					"noRm" => $norm,
+					"noHp" => $nohp,
+					"nomorAntrian" => $noAntrian->noAntri,
+					"angkaAntrean" => $noAntrian->count,
+					"isJkn" => 0,
+					"bookingDate" => $tanggalperiksa,
+					"jamPraktek" => $jampraktek,
+					"noReferensi" => $nomorreferensi,
+					"jenisKunjungan" => $jeniskunjungan,
+					"isCall" => 0,
+					"isCancel" => 0,
+					"isCallOn" => 0,
+					"isCheckIn" => 0,
+					"isOnsite" => 0,
+                    "estimasidilayani" => $this->count_time($tanggalperiksa, $jam[0], $noAntrian->count),
+                    // "estimasiDilayani" => $this->count_wait_time($sisa),
+					"createdAt" => $dateNow->toDateTimeString(),
+					"updatedAt" => $dateNow->toDateTimeString()
+				];
+				
+				$jadwal = JadwalDokter::where('poli_id', $kodepoli)
+								->where('dokter_id', $kodedokter)
+								->where('buka', $jam[0])
+								->where('tutup', $jam[1])
+								->first();
+			
+
+                Antrian::insert($request);
+
+                $response = Antrian::from("rs_counter_antrian as a")
+                                    ->select(
+                                        "a.kodeBooking",
+                                        "a.kodePoli",
+                                        "b.namaPoliAsuransi as namaPoli",
+                                        "a.kodeDokter",
+                                        "c.namaDokterAsuransi as namaDokter",
+                                        "a.noKartu",
+                                        "a.nik",
+                                        "a.noRm",
+                                        "a.noHp",
+                                        "a.nomorAntrian",
+                                        "a.angkaAntrean",
+                                        "a.isJkn",
+                                        "a.bookingDate",
+                                        "a.jamPraktek",
+                                        "a.noReferensi",
+                                        "a.jenisKunjungan",
+                                        "a.isCall",
+                                        "a.estimasiDilayani",
+                                        "a.createdAt",
+                                        "a.updatedAt"
+                                    )
+                                    ->leftJoin("rs_mapping_poli_asuransi as b", "a.kodePoli", '=', 'b.kodePoli')
+                                    ->leftJoin("rs_mapping_dokter_asuransi as c", "a.kodeDokter", '=', 'c.kodeDokter')
+                                    ->where("a.bookingDate", $tanggalperiksa)
+                                    ->where("a.jamPraktek", $jampraktek)
+                                    ->where("a.kodeBooking", $kodeBooking)
+                                    ->where("a.kodePoli", $kodepoli)
+                                    ->where("a.kodeDokter", $kodedokter);
+
+
+                $JmlJkn = Antrian::from("rs_counter_antrian as a")
+                                        ->where("a.bookingDate", $tanggalperiksa)
+                                        ->where("a.jamPraktek", $jampraktek)
+                                        ->where("a.kodePoli", $kodepoli)
+                                        ->where("a.kodeDokter", $kodedokter)
+                                        ->where("a.isJkn", 1);
+
+                $JmlNonJkn = Antrian::from("rs_counter_antrian as a")
+                                        ->where("a.bookingDate", $tanggalperiksa)
+                                        ->where("a.jamPraktek", $jampraktek)
+                                        ->where("a.kodePoli", $kodepoli)
+                                        ->where("a.kodeDokter", $kodedokter)
+                                        ->where("a.isJkn", 0);
+
+				if(sizeof($response->get()) > 0) {   
+
+						$data = [
+                                    "metadata" => [
+                                        "code" => 200,
+                                        "message" => "Ok"
+                                    ],
+                                    "response" => [
+                                        "nomorantrean" => $response->first()->nomorAntrian,
+                                        "angkaantrean" => $response->first()->angkaAntrean,
+                                        "kodebooking" => $kodeBooking,
+                                        "norm" => $norm,
+                                        "namapoli" => $response->first()->namaPoli,
+                                        "namadokter" => $response->first()->namaDokter,
+                                        "estimasidilayani" => intval($response->first()->estimasiDilayani),
+                                        "sisakuotajkn" =>  intval($jadwal->kuotaJkn - $JmlJkn->count()),
+                                        "kuotajkn" =>  intval($jadwal->kuotaJkn),
+                                        "sisakuotanonjkn" =>  intval($jadwal->kuotaNonJkn - $JmlNonJkn->count()),
+                                        "kuotanonjkn" =>  intval($jadwal->kuotaNonJkn),
+                                        "keterangan" => "Peserta harap 60 menit lebih awal guna pencatatan administrasi."
+                                    ],
+								];
+
+						return response()->json([
+                            'metadata'    => $data["metadata"],
+                            'response'        => $data["response"]
+						], 200);
+				}else{
+						return response()->json([
+                            'metadata'    => [
+                                "code" => 201,
+                                "message" => "Gagal"
+                            ],
+                            'response' => "Gagal mengambil antrean!.",
+						], 200);
+				}
+			} catch (\Throwable $e) {
+				return response()->json([
+						'acknowledge' => 0,
+						'error_message' => $e->getMessage(),
+						'error_Line' => $e->getLine(),
+						'message'     => "Gagal!."
+				], 500);
+			}
     }
 }

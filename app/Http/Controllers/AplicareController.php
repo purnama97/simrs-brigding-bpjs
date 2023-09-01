@@ -23,7 +23,7 @@ class AplicareController extends Controller
 	}
 	
 	protected function stock($kode, $status){
-		$count = Kamar::where('kode_kamar_bpjs', $kode)->where('status_kamar', $status)->whereNotNull('kode_kamar_bpjs')->count();
+		$count = Kamar::where('kode_kamar_bpjs', $kode)->where('status_kamar', $status)->where('status_aktif', 1)->whereNotNull('kode_kamar_bpjs')->count();
 		return $count;
 	}
 

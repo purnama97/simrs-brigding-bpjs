@@ -45,7 +45,7 @@ class SEPController extends Controller
             $data = SepBPJS::from("rs_bridging_sep as a")
                         ->select('*')
                         ->orderBy('a.createdAt', 'DESC')
-												->where('a.statusAktif', 1)
+						->where('a.statusAktif', 1)
                         ->where(function ($query) use ($first_period, $last_period, $keyword) {
                             $query->whereBetween("a.tglsep", [$first_period, $last_period]);
                             if (!empty($keyword)) {
@@ -453,10 +453,10 @@ class SEPController extends Controller
             if($datas["metaData"]["code"] === "200") {
 
                 try {     
-									SepBPJS::where("noSep", $noSEP)
-										->update([
-											"statusAktif" => 0
-										]);
+                    SepBPJS::where("noSep", $noSEP)
+                        ->update([
+                            "statusAktif" => 0
+                        ]);
 
                     return response()->json([
                         'acknowledge' => 1,
@@ -526,6 +526,35 @@ class SEPController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
             $data = $referensi->approvalPenjaminanSep($data);
+            if($data["metaData"]["code"] === "200") {
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"]
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'acknowledge' => 0,
+                'error_message' => $e->getMessage(),
+                'error_Line' => $e->getLine(),
+                'message'     => "Gagal!."
+            ], 500);
+        }
+    }
+
+    public function persetujuanSEP($bulan, $tahun) {
+        $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        $vclaim_conf = $this->connection();
+        try {
+            $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
+            $data = $referensi->persetujuanSEP($bulan, $tahun);
             if($data["metaData"]["code"] === "200") {
                 return response()->json([
                     'acknowledge' => 1,
@@ -770,7 +799,20 @@ class SEPController extends Controller
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
-        $data = $referensi->deleteSepInternal($data);
+
+        $req = [
+            "request" => [
+                "t_sep" => [
+                    "noSep" => $data["noSep"],
+                    "noSurat"=> $data["noSurat"],
+                    "tglRujukanInternal"=> $data["tglRujukanInternal"],
+                    "kdPoliTuj"=> $data["kdPoliTuj"],
+                    "user" => $this->name
+                ]
+            ]
+        ];
+
+        $data = $referensi->deleteSepInternal($req);
 
         try {
             if($data["metaData"]["code"] === "200") {

@@ -102,6 +102,7 @@ $router->group(
         $router->get('vclaim/sep/Kllinduk/list/nokartu/{noKartu}','SEPController@dataIndukKLL');
         $router->post('vclaim/sep/pengajuan', 'SEPController@pengajuanSEP');
         $router->post('vclaim/sep/aproval', 'SEPController@approvalPenjaminanSep');
+        $router->get('vclaim/sep/persetujuansep/list/bulan/{bulan}/tahun/{tahun}', 'SEPController@persetujuanSEP');
         $router->put('vclaim/sep/updtglplg', 'SEPController@updateTglPlg');
         $router->get('vclaim/sep/updtglplg/list/bulan/{bulan}/tahun/{tahun}/{filter}', 'SEPController@listUpdateTglPlg');
         $router->get('vclaim/sep/internal/nosep/{noSEP}','SEPController@cariSEPInternal');
@@ -190,6 +191,7 @@ $router->group(
         $router->get('antrean/pendaftaran/aktif', 'WS_BPJS_AntreanController@getAntreanBlmDilayani');
         $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
       
+        $router->post('antrean/ambil/onsite', 'WS_RS_AntreanController@getAntrianManual');
     }
 );
 
