@@ -1058,9 +1058,23 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
-    public function getAntrianFarmasi()
+    public function getAntrianFarmasi(Request $request)
     {
         try {
+
+            $kodeBooking = $request->input("kodebooking");
+
+            $cekRacikan = DB::table('rs_antrian as a')
+                    ->Join('rs_resep_online as b', 'a.strukCode', '=', 'b.strukCode')
+                    ->Join('rs_resep_item as c', 'b.kode_transaksi', '=', 'c.kode_transaksi')
+                    ->where('a.kodeBooking', $kodeBooking)
+                    ->where('c.status_aktif', 1)
+                    ->where('c.jml_R', '>', 0)
+                    ->exists();
+
+            $noAntrian = DB::table('rs_antrian as a')
+                    ->where('a.kodeBooking', $kodeBooking)
+                    ->value('a.noAntrian');
 						
             $data = [
                 "metadata" => [
@@ -1068,8 +1082,8 @@ class WS_RS_AntreanController extends Controller
                     "message" => "Ok"
                 ],
                 "response"=> [
-                    "jenisresep" => "Racikan/Non Racikan",
-                    "nomorantrean" => 1,
+                    "jenisresep" =>  $cekRacikan ? "Racikan" : "Non Racikan",
+                    "nomorantrean" => $noAntrian,
                     "keterangan" => ""
                 ],
             ];
@@ -1098,19 +1112,52 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
-    public function getStatusAntrianFarmasi()
+    public function getStatusAntrianFarmasi(Request $request)
     {
         try {
+
+            $kodeBooking = $request->input("kodebooking");
+
+            $regDate= DB::table('rs_antrian as a')
+                    ->where('a.kodeBooking', $kodeBooking)
+                    ->value('a.regDate');
+
+            $cekRacikan = DB::table('rs_antrian as a')
+                    ->Join('rs_resep_online as b', 'a.strukCode', '=', 'b.strukCode')
+                    ->Join('rs_resep_item as c', 'b.kode_transaksi', '=', 'c.kode_transaksi')
+                    ->where('a.kodeBooking', $kodeBooking)
+                    ->where('c.jml_R', '>', 0)
+                    ->exists();
+
+
+            $jml = DB::table('rs_antrian as a')
+                    ->Join('rs_resep_online as b', 'a.strukCode', '=', 'b.strukCode')
+                    ->Join('rs_resep_item as c', 'b.kode_transaksi', '=', 'c.kode_transaksi')
+                    ->where('c.status_aktif', 1)
+                    ->whereDate('c.created_at', $regDate)
+                    ->groupBy('c.strukCode')
+                    ->count();
+
+            $sisa = DB::table('rs_antrian as a')
+                    ->Join('rs_resep_online as b', 'a.strukCode', '=', 'b.strukCode')
+                    ->Join('rs_resep_item as c', 'b.kode_transaksi', '=', 'c.kode_transaksi')
+                    ->where('c.status_aktif', 1)
+                    ->whereDate('c.created_at', $regDate)
+                    ->groupBy('c.strukCode')
+                    ->where('c.isSerahkan', 0)
+                    ->count();
+                
+
             $data = [
                 "metadata" => [
                     "code" => 200,
                     "message" => "Ok"
                 ],
                 "response"=> [
-                    "jenisresep" => "Racikan/Non Racikan",
-                    "totalantrean"  => 10,
-                    "sisaantrean"  => 8,
-                    "antreanpanggil" => 2,
+                    "jenisresep" => $cekRacikan ? "Racikan" : "Non Racikan",
+                    "totalantrean"  => $jml,
+                    "sisaantrean"  => $jml - $sisa,
+                    "antreanpanggil" => $sisa,
                     "keterangan" => ""
                 ],
             ];
