@@ -32,6 +32,7 @@ $router->group(
 
         //ANTREAN ONLINE WS RS AUTH
         $router->get('antrean/auth', 'AuthController@authenticate');
+        $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian');
 
         $router->post('inacbg/testdekrip', 'EKlaimController@testDekrip');
         $router->get('inacbg/testenkrip', 'EKlaimController@testEnkrip');
@@ -178,7 +179,7 @@ $router->group(
         $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
         $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
         $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
-        $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian');
+        // $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian'); // add via auth
         $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
         $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
         $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
