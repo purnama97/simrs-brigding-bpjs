@@ -62,6 +62,28 @@ $router->group(
         $router->get('inacbg/grouper/prosedur/keyword/{keyword}', 'InacbgController@searchProsedurInaGrouper');
         $router->post('inacbg/sitb/validasi', 'InacbgController@validasiSitb');
         $router->post('inacbg/sitb/batal', 'InacbgController@batalSitb');
+
+        // ANTREAN WS BPJS
+        $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
+        $router->get('antrean/ref/poli/fp', 'WS_BPJS_AntreanController@getPoliFinger');
+        $router->get('antrean/ref/pasien/fp/identitas/{identitas}/noidentitas/{noIdentitas}', 'WS_BPJS_AntreanController@getPasienFinger');
+        $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
+        $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
+        $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
+        // $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian'); // add via auth
+        $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
+        $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
+        $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
+        $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
+        $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
+        $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
+
+        $router->get('antrean/pendaftaran/tanggal/{tanggal}', 'WS_BPJS_AntreanController@getAntreanTgl');
+        $router->get('antrean/pendaftaran/kodebooking/{kodebooking}', 'WS_BPJS_AntreanController@getAntreanKdBooking');
+        $router->get('antrean/pendaftaran/aktif', 'WS_BPJS_AntreanController@getAntreanBlmDilayani');
+        $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
+      
+        $router->post('antrean/ambil/onsite', 'WS_RS_AntreanController@getAntrianManual');
     }
 );
 
@@ -172,27 +194,27 @@ $router->group(
         // $router->put('aplicaresws/bed/{kodePpk}', 'AplicareController@bedUpdate');
         // $router->delete('aplicaresws/bed/{kodePpk}/{kodeKelas}/{kodeRuangan}', 'AplicareController@bedDelete');
 
-        // ANTREAN WS BPJS
-        $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
-        $router->get('antrean/ref/poli/fp', 'WS_BPJS_AntreanController@getPoliFinger');
-        $router->get('antrean/ref/pasien/fp/identitas/{identitas}/noidentitas/{noIdentitas}', 'WS_BPJS_AntreanController@getPasienFinger');
-        $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
-        $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
-        $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
-        // $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian'); // add via auth
-        $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
-        $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
-        $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
-        $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
-        $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
-        $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
+        // // ANTREAN WS BPJS
+        // $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
+        // $router->get('antrean/ref/poli/fp', 'WS_BPJS_AntreanController@getPoliFinger');
+        // $router->get('antrean/ref/pasien/fp/identitas/{identitas}/noidentitas/{noIdentitas}', 'WS_BPJS_AntreanController@getPasienFinger');
+        // $router->get('antrean/ref/dokter', 'WS_BPJS_AntreanController@getDokter');
+        // $router->get('antrean/jadwaldokter/kodepoli/{kodePoli}/tanggal/{tglPelayanan}', 'WS_BPJS_AntreanController@getJadwalDokter');
+        // $router->put('antrean/jadwaldokter', 'WS_BPJS_AntreanController@updateJadwalDokter');
+        // // $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian'); // add via auth
+        // $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
+        // $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
+        // $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
+        // $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
+        // $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
+        // $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
 
-        $router->get('antrean/pendaftaran/tanggal/{tanggal}', 'WS_BPJS_AntreanController@getAntreanTgl');
-        $router->get('antrean/pendaftaran/kodebooking/{kodebooking}', 'WS_BPJS_AntreanController@getAntreanKdBooking');
-        $router->get('antrean/pendaftaran/aktif', 'WS_BPJS_AntreanController@getAntreanBlmDilayani');
-        $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
+        // $router->get('antrean/pendaftaran/tanggal/{tanggal}', 'WS_BPJS_AntreanController@getAntreanTgl');
+        // $router->get('antrean/pendaftaran/kodebooking/{kodebooking}', 'WS_BPJS_AntreanController@getAntreanKdBooking');
+        // $router->get('antrean/pendaftaran/aktif', 'WS_BPJS_AntreanController@getAntreanBlmDilayani');
+        // $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
       
-        $router->post('antrean/ambil/onsite', 'WS_RS_AntreanController@getAntrianManual');
+        // $router->post('antrean/ambil/onsite', 'WS_RS_AntreanController@getAntrianManual');
     }
 );
 
