@@ -53,25 +53,78 @@ class WS_RS_AntreanController extends Controller
         return $result;
     }
 
-    private function generate_batch_id_pasien()
+    private function generate_batch2_id_pasien()
     {
-        $data = Pasien::from('rs_pasien')
+        $data = DB::table('rs_pasien')
             ->select(
                 'batch_id',
-                'urutan_id'
+                'batch',
+                'batch2_id'
             )
-            ->orderBy('pasien_id', 'DESC')
+            ->orderBy('urutan_id', 'DESC')
             ->first();
 
         if (empty($data)) {
-            $result = 1;
+            $result = '00';
             return $result;
         } elseif (!empty($data)) {
-            if ($data->urutan_id == '99999999') {
-                $result = $data->batch_id + 1;
+            if ($data->batch_id == '99') {
+                if ($data->batch != '99') {
+                    $result = sprintf('%02s', $data->batch2_id);
+                    // $result = $data->batch_id + 1;
+                    return $result;
+                } else {
+                    $result = sprintf('%02s', $data->batch2_id + 1);
+                    // $result = $data->batch_id + 1;
+                    return $result;
+                }
+            }
+            if ($data->batch_id != '99') {
+                $result = sprintf('%02s', $data->batch2_id);
+                // $result = $data->batch_id + 1;
                 return $result;
-            } else {
-                $result = $data->batch_id;
+            }
+            if ($data->batch != '99' && $data->batch_id == '00' && $data->batch2_id == '00') {
+                $result = '00';
+                return $result;
+            }
+        }
+    }
+
+    private function generate_batch_id_pasien()
+    {
+        $data = DB::table('rs_pasien')
+            ->select(
+                'batch_id',
+                'batch',
+                'batch2_id'
+            )
+            ->orderBy('urutan_id', 'DESC')
+            ->first();
+
+        if (empty($data)) {
+            $result = '00';
+            return $result;
+        } elseif (!empty($data)) {
+            if ($data->batch == '99') {
+                if ($data->batch_id == '99') {
+                    $result = '00';
+                    return $result;
+                } else {
+                    $result = sprintf('%02s', $data->batch_id + 1);
+                    return $result;
+                }
+            }
+            if ($data->batch != '99' && $data->batch_id == '99') {
+                // $result = '00';
+                // return $result;
+                $result = sprintf('%02s', $data->batch_id);
+                // $result = $data->batch_id + 1;
+                return $result;
+            }
+            if ($data->batch_id != '99' && $data->batch != '99') {
+                $result = sprintf('%02s', $data->batch_id);
+                // $result = $data->batch_id + 1;
                 return $result;
             }
         }
@@ -79,26 +132,56 @@ class WS_RS_AntreanController extends Controller
 
     private function generate_urutan_id_pasien()
     {
-        $data = Pasien::from('rs_pasien')
+        $data = DB::table('rs_pasien')
             ->select(
                 'batch_id',
-                'urutan_id'
+                'batch',
+                'batch2_id'
             )
-            ->orderBy('pasien_id', 'DESC')
+            ->orderBy('urutan_id', 'DESC')
             ->first();
 
         if (empty($data)) {
-            $result = '00000001';
+            $result = '00';
             return $result;
         } elseif (!empty($data)) {
 
-            if ($data->urutan_id == '99999999') {
-                $result = '00000001';
-                return $result;
-            } else {
-                $result = sprintf('%08s', $data->urutan_id + 1);
+            if ($data->batch == '99') {
+                $result = '00';
                 return $result;
             }
+            if ($data->batch != '99') {
+                if ($data->batch_id == '99') {
+                    $result = sprintf('%02s', $data->batch + 1);
+                    return $result;
+                }
+                if ($data->batch2_id == '99' && $data->batch_id == '99') {
+                    $result = '00';
+                    return $result;
+                } else {
+                    $result = sprintf('%02s', $data->batch + 1);
+                    return $result;
+                }
+            }
+        }
+    }
+
+    private function generate_urut_pasien()
+    {
+        $data = DB::table('rs_pasien')
+            ->select(
+                'urutan_id'
+            )
+            ->orderBy('urutan_id', 'DESC')
+            ->first();
+
+        if (empty($data)) {
+            $result = 1;
+            return $result;
+        } elseif (!empty($data)) {
+
+            $result = $data->urutan_id + 1;
+            return $result;
         }
     }
 
@@ -319,6 +402,15 @@ class WS_RS_AntreanController extends Controller
 				$nomorreferensi = $this->request->input('nomorreferensi');
 				$kodeBooking = $this->get_struk_no($tanggalperiksa);
                 $jam = explode('-', $jampraktek);
+
+                if(!Pasien::from("rs_pasien")->where("pasien_id", $norm)->exists()){
+                    return response()->json([
+						"metadata" => [
+							"code" => 202,
+							"message" => "Data pasien ini tidak ditemukan, silahkan Melakukan Registrasi Pasien Baru",
+						],
+					], 202);
+                }
 
                 $poliId = MappingPoli::from("rs_mapping_poli_asuransi as a")
                         ->leftJoin("rs_poli as b", "a.kodePoli", '=', 'b.poli_id')
@@ -781,6 +873,7 @@ class WS_RS_AntreanController extends Controller
     {
         $date = Carbon::now()->toDateTimeString();
         try {
+
             // {
             //     "nomorkartu": "00012345678",
             //     "nik": "3212345678987654",
@@ -802,7 +895,7 @@ class WS_RS_AntreanController extends Controller
             //     "rt": "013"
             //  }
 
-            if(Pasien::where("no_ktp", $this->request->input("nik"))->exists()){
+            if(Pasien::where("no_ktp", $this->request->input("nik"))->exists() || Pasien::where("no_kartu", $this->request->input("nomorkartu"))->exists()){
                 $noRm = Pasien::from("rs_pasien")->where("no_ktp", $this->request->input("nik"))->value("pasien_id");
 
                 $data = [
@@ -830,9 +923,14 @@ class WS_RS_AntreanController extends Controller
                     ], 200);
                 }
             }
+
+            $urutan = $this->generate_urutan_id_pasien();
+            $batch = $this->generate_batch_id_pasien();
+            $batch2 = $this->generate_batch2_id_pasien();
+            $urut = $this->generate_urut_pasien();
              
             Pasien::insert([
-                'pasien_id' => $this->generate_batch_id_pasien() . '-' . $this->generate_urutan_id_pasien(),
+                "pasien_id" => $urutan . '.' . $batch . '.' . $batch2,
                 'nama_pasien' => $this->request->input("nama"),
                 'no_ktp' => $this->request->input("nik"),
                 'salut' => "",
@@ -858,16 +956,17 @@ class WS_RS_AntreanController extends Controller
                 'status_pasien' => "PASIEN BARU",
                 'created_at' => $date,
                 'updated_at' => $date,
-                'status_aktif' => "",
-                'asuransi' => "",
+                'status_aktif' => 1,
+                'asuransi' => "INS000001",
                 'no_kartu' => $this->request->input("nomorkartu"),
                 'email' => "",
                 'ayah' => "",
                 'exp_kartu' => "",
                 'pj_pasien' => "",
                 'berkas_rm' => "",
-                'batch_id' => $this->generate_batch_id_pasien(),
-                'urutan_id' => $this->generate_urutan_id_pasien()
+                "batch" => $urutan,
+                "batch_id" => $batch,
+                "batch2_id" => $batch2,
             ]);
 
             $noRm = Pasien::from("rs_pasien")->where("created_at", $date)->value("pasien_id");

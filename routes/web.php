@@ -119,7 +119,7 @@ $router->group(
         $router->put('vclaim/sep','SEPController@updateSEP');
         $router->delete('vclaim/sep/nosep/{noSEP}','SEPController@deleteSEP');
         $router->post('vclaim/sep/list','SEPController@listSEP');
-        $router->get('vclaim/sep/detail/nosep/{noSEP}','SEPController@detailSEP');
+        $router->get('vclaim/sep/detail/nosep/{noSEP}/kunj/{kunj}','SEPController@detailSEP');
         $router->get('vclaim/sep/nosep/{noSEP}','SEPController@cariSEP');
         $router->get('vclaim/sep/jasaraharja/suplesi/nokartu/{noKartu}/tglpelayanan/{tglPelayananSEP}','SEPController@suplesiJasaRaharja');
         $router->get('vclaim/sep/Kllinduk/list/nokartu/{noKartu}','SEPController@dataIndukKLL');
@@ -136,11 +136,13 @@ $router->group(
         
         // RUJUKAN
         $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
-        $router->get('vclaim/rujukan/RS/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+        $router->get('vclaim/rujukan/{searchBy}/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
+
         $router->get('vclaim/rujukan/nokartu/{noKartu}','RujukanController@cariByNoKartu');
+        $router->get('vclaim/rujukan/{searchBy}/nokartu/{noKartu}','RujukanController@cariByNoKartu');
+
         $router->get('vclaim/rujukan/{searchBy}/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
-        $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
-        $router->get('vclaim/rujukan/nokartu/{noKartu}','RujukanController@cariByNoKartu');
+
         $router->get('vclaim/rujukan/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
         $router->post('vclaim/rujukan','RujukanController@insertRujukan');
         $router->put('vclaim/rujukan','RujukanController@updateRujukan');

@@ -80,12 +80,13 @@ class SEPController extends Controller
         }
     }
 
-		public function detailSEP($noSEP)
+		public function detailSEP($noSEP, $kunj)
     {
         try {
             $data = SepBPJS::from("rs_bridging_sep as a")
                         ->select('*')
                         ->where("a.noSep", $noSEP)
+                        ->where("a.kunjKe", $kunj)
                         ->first();
 
             if(!empty($data)) {
@@ -211,16 +212,17 @@ class SEPController extends Controller
               "dpjpLayan" => $input["request"]["t_sep"]["kdDpjpLayan"],
               "noTelp" => $input["request"]["t_sep"]["noTelp"],
               "user" => $input["request"]["t_sep"]["user"],
-						]
-					]
-				];
+                ]
+            ]
+        ];
 
         $dateNow = Carbon::now()->toDateTimeString();
         $referensi = new Purnama97\Bpjs\VClaim\SEP($vclaim_conf);
         $data = $referensi->insertSEP($dataSep);
         
         if($data["metaData"]["code"] === "200") {
-            try {    
+            try {
+                $count = SepBPJS::where('noSep', $data["response"]["sep"]["noSep"])->count() + 1;    
                 SepBPJS::insert([
                     "noSep" => $data["response"]["sep"]["noSep"],
                     "noRawat" => "",
@@ -271,15 +273,18 @@ class SEPController extends Controller
                     "penunjang" => $input["request"]["t_sep"]["kdPenunjang"],
                     "assesment" => $input["request"]["t_sep"]["assesmentPel"],
                     "flagProcedure" => $input["request"]["t_sep"]["flagProcedure"],
+                    "kunjKe" => $count,
                     "statusAktif" => 1,
                     "createdAt" => $dateNow,
                     "updatedAt" => $dateNow
                 ]);
 
+                $dataSep = SepBPJS::where('noSep', $data["response"]["sep"]["noSep"])->where('kunjKe', $count)->first(); 
+
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
+                    'data'        => $dataSep,
                     'message'     => "BPJS CONNECTED!"
                 ], 200);
             } catch (\Exception $e) {

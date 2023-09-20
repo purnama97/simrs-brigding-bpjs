@@ -337,6 +337,44 @@ class RujukanController extends Controller
         }
     }
 
+    public function cariByNoRujukanRS($searchBy = null, $noRujukan)
+    {
+        if (empty($searchBy)) {
+            $searchBy = ' ';
+        } else {
+            $searchBy = $searchBy;
+        }
+        //use your own bpjs config
+        $vclaim_conf = $this->connection();
+
+        try {
+            $referensi = new Purnama97\Bpjs\VClaim\Rujukan($vclaim_conf);
+            $data = $referensi->cariByNoRujukanRS('RS', $noRujukan);
+            
+            if($data["metaData"]["code"] === "200") {  
+                return response()->json([
+                    'acknowledge' => 1,
+                    'metaData'    => $data["metaData"],
+                    'data'        => $data["response"],
+                    'message'     => "BPJS CONNECTED!"
+                ], 200);
+            }else{
+                return response()->json([
+                    'acknowledge' => 0,
+                    'metaData'    => $data["metaData"],
+                    'data'        => [],
+                ], 200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'acknowledge' => 0,
+                'error_message' => $e->getMessage(),
+                'error_Line' => $e->getLine(),
+                'message'     => "Gagal!."
+            ], 500);
+        }
+    }
+
     public function cariByNoKartu($searchBy = null, $noKartu)
     {
         if (empty($searchBy)) {
