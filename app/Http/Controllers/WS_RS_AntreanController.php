@@ -53,6 +53,24 @@ class WS_RS_AntreanController extends Controller
         return $result;
     }
 
+    public function refHari($tanggal) {
+
+        $day = date('D', strtotime($tanggal));
+        $dayList = array(
+            'Sun' => '7',
+            'Mon' => '1',
+            'Tue' => '2',
+            'Wed' => '3',
+            'Thu' => '4',
+            'Fri' => '5',
+            'Sat' => '6'
+        );
+
+        return $dayList[$day];
+
+            
+    }
+
     private function generate_batch2_id_pasien()
     {
         $data = DB::table('rs_pasien')
@@ -466,7 +484,7 @@ class WS_RS_AntreanController extends Controller
                     ], 201);
                 }
 
-                $cekJadwal = JadwalDokter::where('poli_id', $poliId)
+                $cekJadwal = JadwalDokter::where('hari_id', $this->refHari($tanggalperiksa))
 								->where('dokter_id', $dokterId)
 								->where('buka', $jam[0])
 								->where('tutup', $jam[1])
