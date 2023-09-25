@@ -277,13 +277,14 @@ class WS_BPJS_AntreanController extends Controller
     {
         $dateNow = Carbon::now();
         $dateTimeNow = $dateNow->toDateTimeString();
-        $data = $this->request->input($request);
+        $kodebooking = $this->request->input("kodeBooking");
+        $taskid = $this->request->input("taskid");
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         
         $dataAntrol = [
-            "kodebooking" => $data["kodeBooking"],
-            "taskid" => $data["taskid"],
+            "kodebooking" => $kodebooking,
+            "taskid" => $taskid,
             "waktu" => $this->convert_date_to_mil($dateTimeNow)
         ];
 

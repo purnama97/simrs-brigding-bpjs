@@ -185,6 +185,17 @@ class WS_RS_AntreanController extends Controller
         }
     }
 
+    private function addSpiltAddress($string) {
+        $result = '';
+        $length = strlen($string);
+    
+        for ($i = 0; $i < $length; $i += 2) {
+            $result .= substr($string, $i, 2) . '.';
+        }
+    
+        return rtrim($result, '.'); // Menghapus titik ekstra di akhir
+    }
+
     public function get_struk_no($tanggalperiksa)
     {
         $datenow = Carbon::create($tanggalperiksa);
@@ -936,9 +947,9 @@ class WS_RS_AntreanController extends Controller
                 'salut' => "",
                 'alamat' => $this->request->input("alamat"),
                 'provinsi_id' => "",
-                'kota_kab_id' => "",
-                'kecamatan_id' => "",
-                'kelurahan_id' => "",
+                'kota_kab_id' => "", // $this->addSpiltAddress(),
+                'kecamatan_id' => "", // $this->addSpiltAddress(),
+                'kelurahan_id' => "", // $this->addSpiltAddress(),
                 'rt' => "",
                 'rw' => "",
                 'kode_pos' => "",
@@ -967,6 +978,7 @@ class WS_RS_AntreanController extends Controller
                 "batch" => $urutan,
                 "batch_id" => $batch,
                 "batch2_id" => $batch2,
+                "urutan_id" => $urut,
             ]);
 
             $noRm = Pasien::from("rs_pasien")->where("created_at", $date)->value("pasien_id");
