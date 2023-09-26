@@ -924,6 +924,168 @@ class WS_RS_AntreanController extends Controller
             //     "rt": "013"
             //  }
 
+            
+
+            if(strlen("nomorkartu") <> 13) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Format Kartu Tidak Sesuai",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
+            if(strlen("nik") <> 16) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Format NIK Tidak Sesuai",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
+    
+
+            if(empty($this->request->input("nomorkartu"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Nomor Kartu Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
+            if(empty($this->request->input("nik"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "NIK Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
+            if(empty($this->request->input("nama"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Nama Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
+            if(empty($this->request->input("nomorkk"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Nomor KK Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("jeniskelamin"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Jenis Kelamin Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("tanggallahir"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Tanggal Lahir Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("nohp"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "No HP Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("alamat"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Alamat Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("kodeprop"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Kode Provinsi Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("namaprop"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "Nama Provinsi Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("kodedati2"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "kodedati2 Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("namadati2"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "namadati2 Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("kodekec"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "kodekec Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("kodekel"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "kodekel Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("namakel"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "namakel Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("rw"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "rw Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+            if(empty($this->request->input("rt"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "rt Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
+
             if(Pasien::where("no_ktp", $this->request->input("nik"))->exists() || Pasien::where("no_kartu", $this->request->input("nomorkartu"))->exists()){
                 $noRm = Pasien::from("rs_pasien")->where("no_ktp", $this->request->input("nik"))->value("pasien_id");
 
@@ -1004,7 +1166,7 @@ class WS_RS_AntreanController extends Controller
             $data = [
                 "metadata" => [
                     "code" => 200,
-                    "message" => "Ok"
+                    "message" => "Harap datang ke admisi untuk melengkapi data rekam medis"
                 ],
                 "response"=> [
                     "norm" => $noRm
