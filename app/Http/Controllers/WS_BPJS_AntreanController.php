@@ -347,7 +347,7 @@ class WS_BPJS_AntreanController extends Controller
 
     public function waktuTasks($kodeBooking)
     {
-        $data = [
+        $datas = [
             "kodebooking" => $kodeBooking
         ];
         //use your own bpjs config
@@ -355,7 +355,7 @@ class WS_BPJS_AntreanController extends Controller
 
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
-            $data = $referensi->waktuTasks($data);
+            $data = $referensi->waktuTasks($datas);
             if($data["response"] !== NULL) {   
                 return response()->json([
                     'acknowledge' => 1,
@@ -367,7 +367,7 @@ class WS_BPJS_AntreanController extends Controller
                 return response()->json([
                     'acknowledge' => 0,
                     'metaData'    => $data["metaData"],
-                    'data'        => [],
+                    'data'        => $datas,
                 ], 200);
             }
         } catch (\Throwable $e) {

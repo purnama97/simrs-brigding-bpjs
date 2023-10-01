@@ -901,6 +901,7 @@ class WS_RS_AntreanController extends Controller
     public function getInfoPasien()
     {
         $date = Carbon::now()->toDateTimeString();
+		$tanggalsekarang = Carbon::now()->toDateString();
         try {
 
             // {
@@ -926,7 +927,7 @@ class WS_RS_AntreanController extends Controller
 
             
 
-            if(strlen("nomorkartu") <> 13) {
+            if(strlen($this->request->input("nomorkartu")) <> 13 && !empty($this->request->input("nomorkartu"))) {
                 return response()->json([
                     'metadata'    => [
                         "message" => "Format Kartu Tidak Sesuai",
@@ -935,7 +936,7 @@ class WS_RS_AntreanController extends Controller
                 ], 201);
             }
 
-            if(strlen("nik") <> 16) {
+            if(strlen($this->request->input("nik")) <> 16 && !empty($this->request->input("nik"))) {
                 return response()->json([
                     'metadata'    => [
                         "message" => "Format NIK Tidak Sesuai",
@@ -1053,6 +1054,14 @@ class WS_RS_AntreanController extends Controller
                     ]
                 ], 201);
             }
+			 if(empty($this->request->input("namakec"))) {
+                return response()->json([
+                    'metadata'    => [
+                        "message" => "namakec Belum Diisi",
+                        "code" => 201
+                    ]
+                ], 201);
+            }
             if(empty($this->request->input("kodekel"))) {
                 return response()->json([
                     'metadata'    => [
@@ -1085,34 +1094,23 @@ class WS_RS_AntreanController extends Controller
                     ]
                 ], 201);
             }
+			
+			 if (strtotime($this->request->input("tanggallahir")) > strtotime($tanggalsekarang)) {
+                return response()->json([
+                    "metadata" => [
+                        "code" => 201,
+                        "message" => "Format Tanggal Lahir Tidak Sesuai",
+                    ],
+                ], 201);
+            }
 
             if(Pasien::where("no_ktp", $this->request->input("nik"))->exists() || Pasien::where("no_kartu", $this->request->input("nomorkartu"))->exists()){
-                $noRm = Pasien::from("rs_pasien")->where("no_ktp", $this->request->input("nik"))->value("pasien_id");
-
-                $data = [
-                    "metadata" => [
-                        "code" => 200,
-                        "message" => "Ok"
-                    ],
-                    "response"=> [
-                        "norm" => $noRm
-                    ],
-                ];
-
-                if(sizeof($data["metadata"]) > 0) {   
-                    return response()->json([
-                        'metadata'    => $data["metadata"],
-                        'response'    => $data["response"],
-                    ], 200);
-                }else{
-                    return response()->json([
-                        'metadata'    => [
-                                "code" => 201,
-                                "message" => "Gagal"
-                        ],
-                        'response'        => "Gagal memuat info pasien!.",
-                    ], 200);
-                }
+				return response()->json([
+					'metadata'    => [
+						"code" => 201,
+						"message" => "Data Peserta Sudah Pernah Dientrikan"
+					]
+				], 201);
             }
 
             $urutan = $this->generate_urutan_id_pasien();

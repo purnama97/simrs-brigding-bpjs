@@ -224,7 +224,7 @@ $router->group(
          $router->post('antrean/farmasi/add', 'WS_BPJS_AntreanController@addAntrianFarmasi');
          $router->put('antrean/update', 'WS_BPJS_AntreanController@updateWaktuAntrian');
          $router->post('antrean/batal', 'WS_BPJS_AntreanController@batalAntrian');
-         $router->get('antrean/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
+         $router->get('antrean/listtaks/kodebooking/{kodeBooking}', 'WS_BPJS_AntreanController@waktuTasks');
          $router->get('antrean/dashboard/waktutunggu/tanggal/{date}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardTgl');
          $router->get('antrean/dashboard/waktutunggu/bulan/{month}/tahun/{year}/waktu/{time}', 'WS_BPJS_AntreanController@getDashboardBln');
  
