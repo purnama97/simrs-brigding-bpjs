@@ -8,6 +8,7 @@ use App\Libraries\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Antrian;
 
 class WS_BPJS_AntreanController extends Controller
 {
@@ -315,24 +316,29 @@ class WS_BPJS_AntreanController extends Controller
 
     public function batalAntrian($request = [])
     {
-        $data = $this->request->input($request);
+        $datas = $this->request->input($request);
+        $dateNow = Carbon::now();
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
-            $data = $referensi->batalAntrian($data);
-            if($data["response"] !== NULL) {   
+            $data = $referensi->batalAntrian($datas);
+            if($data["metadata"]["code"] === 200) {  
+                Antrian::where("kodeBooking", $datas["kodebooking"])
+                    ->update([
+                        "isCancel" => 1,
+                        "waktuCancel" =>  $this->convert_date_to_mil($dateNow->toDateTimeString()),
+                        "note" => $datas['keterangan']
+                    ]);
+
                 return response()->json([
                     'acknowledge' => 1,
-                    'metaData'    => $data["metaData"],
-                    'data'        => $data["response"],
-                    'message'     => "BPJS CONNECTED!"
+                    'metaData'    => $data['metadata'],
                 ], 200);
             }else{
                 return response()->json([
                     'acknowledge' => 0,
-                    'metaData'    => $data["metaData"],
-                    'data'        => [],
+                    'metaData'    => $data["metadata"],
                 ], 200);
             }
         } catch (\Throwable $e) {

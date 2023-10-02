@@ -175,6 +175,8 @@ $router->group(
         // $router->delete('aplicaresws/bed/{kodePpk}/{kodeKelas}/{kodeRuangan}', 'AplicareController@bedDelete');
 
         // // ANTREAN WS BPJS
+        $router->post('antrean/simfktl/batal', 'WS_BPJS_AntreanController@batalAntrian');
+
         // $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
         // $router->get('antrean/ref/poli/fp', 'WS_BPJS_AntreanController@getPoliFinger');
         // $router->get('antrean/ref/pasien/fp/identitas/{identitas}/noidentitas/{noIdentitas}', 'WS_BPJS_AntreanController@getPasienFinger');
