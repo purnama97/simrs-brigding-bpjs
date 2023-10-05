@@ -207,7 +207,7 @@ $router->group(
         $router->post('antrean/status', 'WS_RS_AntreanController@getStatus');
         $router->post('antrean/ambil', 'WS_RS_AntreanController@getAntrian');
         $router->post('antrean/sisa', 'WS_RS_AntreanController@getSisaAntrian');
-        $router->post('antrean/batal', 'WS_RS_AntreanController@batalAntrian');
+        $router->post('antrean/cancel', 'WS_RS_AntreanController@batalAntrian');
         $router->post('antrean/checkin', 'WS_RS_AntreanController@checkinAntrian');
         $router->post('antrean/infopasien', 'WS_RS_AntreanController@getInfoPasien');
         $router->post('antrean/jadwaloperasi/rs', 'WS_RS_AntreanController@jadwalOkRS');
