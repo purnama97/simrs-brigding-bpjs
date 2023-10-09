@@ -35,14 +35,27 @@ class WS_RS_AntreanController extends Controller
     }
 
     public function count_time($date, $time, $jml){
-        if($jml > 1) {
-            $newDate = $date.' '.$time.':00';
-            $result = $this->convert_date_to_mil($newDate) + (300000 * ($jml-1));
-            return $result;
-        }else{
-            $newDate = $date.' '.$time.':00';
-            $result = $this->convert_date_to_mil($newDate);
-            return $result;
+        $dateNow = Carbon::now()->toDateTimeString();
+        if(strtotime($dateNow) > strtotime($date.' '.$time.':00')){
+            if($jml > 1) {
+                $newDate = $dateNow;
+                $result = $this->convert_date_to_mil($newDate) + (300000 * ($jml-1));
+                return $result;
+            }else{
+                $newDate = $dateNow;
+                $result = $this->convert_date_to_mil($newDate);
+                return $result;
+            }
+        }else {
+            if($jml > 1) {
+                $newDate = $date.' '.$time.':00';
+                $result = $this->convert_date_to_mil($newDate) + (300000 * ($jml-1));
+                return $result;
+            }else{
+                $newDate = $date.' '.$time.':00';
+                $result = $this->convert_date_to_mil($newDate);
+                return $result;
+            }
         }
     }
 
