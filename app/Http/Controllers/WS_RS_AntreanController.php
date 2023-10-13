@@ -874,12 +874,12 @@ class WS_RS_AntreanController extends Controller
     {
         $kodeBooking = $this->request->input('kodebooking');
         $waktu = $this->request->input('waktu');
-        $dateNow = Carbon::now();
+        $dateNow = Carbon::now()->toDateString();
         try {
             Antrian::where("kodeBooking", $kodeBooking)
                     ->update([
                         "isCheckIn" => 1,
-                        "waktuCheckIn" => $waktu
+                        "waktuCheckIn" => $this->convert_date_to_mil($dateNow)
                     ]);
 
             $data  = Antrian::where("kodeBooking", $kodeBooking)->where("isCheckIn", 1)->get();

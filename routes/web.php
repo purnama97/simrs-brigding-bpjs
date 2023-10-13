@@ -167,6 +167,10 @@ $router->group(
         $router->get('vclaim/monitoring/historipelayanan/nokartu/{noKartu}/tglmulai/{tglAwal}/tglakhir/{tglAkhir}','MonitoringController@historyPelayanan');
         $router->get('vclaim/monitoring/jasaraharja/jnspelayanan/{jnsPelayanan}/tglmulai/{tglMulai}/tglakhir/{tglAkhir}','MonitoringController@dataKlaimJasaRaharja');
 
+        // ICARE & CHECKIN VIA SIMRS
+        $router->post('icare/fktl', 'ICareController@IcareFKTL');
+        $router->post('antrean/simrs/checkin', 'WS_RS_AntreanController@checkinAntrian');
+        
         // // APLICARE
         // $router->get('aplicaresws/ref/kelas', 'AplicareController@refKelas');
         // $router->get('aplicaresws/bed/{kodePpk}/{start}/{limit}', 'AplicareController@bedGet');
@@ -214,6 +218,10 @@ $router->group(
         $router->post('antrean/jadwaloperasi/pasien', 'WS_RS_AntreanController@jadwalOkPasien');
         $router->post('antrean/farmasi/ambil', 'WS_RS_AntreanController@getAntrianFarmasi');
         $router->post('antrean/farmasi/status', 'WS_RS_AntreanController@getStatusAntrianFarmasi');
+
+        
+        // // ICARE
+        // $router->post('icare/fktl', 'ICareController@IcareFKTL');
 
          // ANTREAN WS BPJS
          $router->get('antrean/ref/poli', 'WS_BPJS_AntreanController@getPoli');
