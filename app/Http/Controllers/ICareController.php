@@ -37,7 +37,7 @@ class ICareController extends Controller
     public function IcareFKTL($request =[])
     {
         $data = $this->request->input($request);
-        $docCode = DB::table('rs_mapping_dokter_asuransi')->where('kodeDokter',  $this->docCode)->value('kodeDokterAsuransi');
+        $docCode = DB::table('rs_mapping_dokter_asuransi')->where('kodeDokter',  $data["kodedokter"])->value('kodeDokterAsuransi');
         //use your own bpjs config
 
         $payload = [

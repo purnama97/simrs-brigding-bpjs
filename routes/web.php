@@ -30,8 +30,12 @@ $router->group(
         $router->put('aplicaresws/bed/{kodePpk}', 'AplicareController@bedUpdate');
         $router->delete('aplicaresws/bed/{kodePpk}/{kodeKelas}/{kodeRuangan}', 'AplicareController@bedDelete');
 
+        
+        $router->post('icare/public/fktl', 'ICareController@IcareFKTL');
+
         //ANTREAN ONLINE WS RS AUTH
         $router->get('antrean/auth', 'AuthController@authenticate');
+
         // $router->post('antrean/add', 'WS_BPJS_AntreanController@addAntrian');
 
         $router->post('inacbg/testdekrip', 'EKlaimController@testDekrip');
@@ -113,15 +117,16 @@ $router->group(
         // $router->get('BPJS/VClaim/SEP','SEPController@listSEP');
         
         // RUJUKAN
+        $router->get('vclaim/rujukan/jumlahsep/{jenis}/{norujukan}','RujukanController@jumlahSEP');
         $router->get('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
         $router->get('vclaim/rujukan/{searchBy}/norujukan/{noRujukan}','RujukanController@cariByNoRujukan');
 
         $router->get('vclaim/rujukan/nokartu/{noKartu}','RujukanController@cariByNoKartu');
         $router->get('vclaim/rujukan/{searchBy}/nokartu/{noKartu}','RujukanController@cariByNoKartu');
 
+        $router->get('vclaim/rujukan/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
         $router->get('vclaim/rujukan/{searchBy}/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
 
-        $router->get('vclaim/rujukan/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
         $router->post('vclaim/rujukan','RujukanController@insertRujukan');
         $router->put('vclaim/rujukan','RujukanController@updateRujukan');
         $router->post('vclaim/rujukan/khusus','RujukanController@insertRujukanKhusus');
@@ -130,8 +135,9 @@ $router->group(
         $router->get('vclaim/rujukan/listspesialistik/ppkrujukan/{kodePPK}/tglrujukan/{tglRujuk}','RujukanController@spesialistikRujukan');
         $router->get('vclaim/rujukan/listsarana/ppkrujukan/{kodePPK}','RujukanController@saranaRujukan');
         $router->get('vclaim/rujukan/keluar/list/tglmulai/{tglMulai}/tglakhir/{tglAkhir}','RujukanController@getRujukKeluar');
-        $router->get('vclaim/rujukan/keluar/norujukan/{noRujukan}','RujukanController@cariRujukKeluar');
-        $router->delete('vclaim/rujukan/norujukan/{noRujukan}','RujukanController@deleteRujukan');
+        $router->get('vclaim/rujukan/keluar/search/norujukan/{noRujukan}','RujukanController@cariRujukKeluar');
+        $router->delete('vclaim/rujukan/keluar/delete/norujukan/{noRujukan}','RujukanController@deleteRujukan');
+        $router->get('vclaim/rujukan/jumlahsep/{jenis}/{norujukan}','RujukanController@jumlahSEP');
 
         // PRB
         $router->post('vclaim/prb','PRBController@insertPRB');
@@ -244,6 +250,20 @@ $router->group(
          $router->get('antrean/pendaftaran/kodepoli/{kodepoli}/kodedokter/{kodedokter}/hari/{hari}/jampraktek/{jampraktek}', 'WS_BPJS_AntreanController@getAntreanBlmDilayaniDokter');
        
          $router->post('antrean/ambil/onsite', 'WS_RS_AntreanController@getAntrianManual');
+
+
+        // JML SEP
+        $router->get('antrol/rujukan/jumlahsep/{jenis}/{norujukan}','RujukanController@jumlahSEP');
+
+        // PESERTA ANTROL
+        $router->get('antrol/peserta/noKartu/{noKartu}/tglsep/{tglPelayananSEP}','PesertaController@getByNoKartu');
+        $router->get('antrol/peserta/nik/{nik}/tglsep/{tglPelayananSEP}','PesertaController@getByNIK');
+
+        // RUJUKAN ANTROL
+        $router->get('antrol/rujukan/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
+        $router->get('antrol/rujukan/{searchBy}/list/nokartu/{noKartu}','RujukanController@cariByListNoKartu');
+        $router->get('antrol/rencanakontrol/listrencanakontrol/bulan/{bulan}/tahun/{tahun}/nokartu/{nokartu}/filter/{filter}','RencanaKontrolController@dataNoSuratKontrolByNoKartu');
+        $router->get('antrol/sep/nosep/{noSEP}','SEPController@cariSEP');
     }
 );
 

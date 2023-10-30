@@ -1235,10 +1235,10 @@ class WS_RS_AntreanController extends Controller
                         "e.no_kartu",
                         "a.updated_at"
                     )
-                    ->leftJoin('rs_detail_permintaan_operasi as b', 'a.no_permintaan', '=', 'b.no_permintaan')
-                    ->leftJoin('rs_tindakan_kamar as c', 'b.kode_tindakan', '=', 'c.tindakan_kamar_id')
-                    ->leftJoin('rs_mapping_poli_asuransi as d', 'd.kodePoli', '=', 'c.kdPoli')
+                    ->leftJoin('rs_tindakan_kamar as c', 'a.kode_tindakan', '=', 'c.tindakan_kamar_id')
+                    ->leftJoin('rs_mapping_poli_asuransi as d', 'a.poli_id', '=', 'd.kodePoli')
                     ->leftJoin('rs_pasien as e', 'e.pasien_id', '=', 'a.pasien_id')
+                    ->where('a.status_aktif', 1)
                     ->whereBetween('a.tgl_mulai', [$tanggalawal, $tanggalakhir])
                     ->get();
 
@@ -1303,12 +1303,12 @@ class WS_RS_AntreanController extends Controller
                         "c.nama_tindakan",
                         "d.kodePoliAsuransi",
                         "d.namaPoliAsuransi",
+                        "a.status_operasi",
                         "e.no_kartu",
                         "a.updated_at"
                     )
-                    ->leftJoin('rs_detail_permintaan_operasi as b', 'a.no_permintaan', '=', 'b.no_permintaan')
-                    ->leftJoin('rs_tindakan_kamar as c', 'b.kode_tindakan', '=', 'c.tindakan_kamar_id')
-                    ->leftJoin('rs_mapping_poli_asuransi as d', 'd.kodePoli', '=', 'c.kdPoli')
+                    ->leftJoin('rs_tindakan_kamar as c', 'a.kode_tindakan', '=', 'c.tindakan_kamar_id')
+                    ->leftJoin('rs_mapping_poli_asuransi as d', 'a.poli_id', '=', 'd.kodePoli')
                     ->leftJoin('rs_pasien as e', 'e.pasien_id', '=', 'a.pasien_id')
                     ->where('e.no_kartu', $nopeserta)
                     ->get();
@@ -1322,7 +1322,7 @@ class WS_RS_AntreanController extends Controller
                     "jenistindakan" => $row->nama_tindakan,
                     "kodepoli" => $row->kodePoliAsuransi,
                     "namapoli" => $row->namaPoliAsuransi,
-                    "terlaksana" => 1
+                    "terlaksana" => $row->status_operasi == "Tunggu" ? 0:1,
                 ]);
             }
 

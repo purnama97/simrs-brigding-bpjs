@@ -221,6 +221,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->addAntrian($data);
+    
             if($data["metadata"]["code"] === 200) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
@@ -280,18 +281,29 @@ class WS_BPJS_AntreanController extends Controller
         $dateTimeNow = $dateNow->toDateTimeString();
         $kodebooking = $this->request->input("kodeBooking");
         $taskid = $this->request->input("taskid");
+        $jenisresep = $this->request->input("jenisresep");
         $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
         $vclaim_conf = $this->connection();
         
-        $dataAntrol = [
+     
+        $dataAntrol1 = [
+            "kodebooking" => $kodebooking,
+            "taskid" => $taskid,
+            "jenisresep" => $jenisresep,
+            "waktu" => $this->convert_date_to_mil($dateTimeNow)
+        ];
+
+        $dataAntrol2 = [
             "kodebooking" => $kodebooking,
             "taskid" => $taskid,
             "waktu" => $this->convert_date_to_mil($dateTimeNow)
         ];
 
+        $payload = $taskid == 5 ?  $dataAntrol1 : $dataAntrol2;
+
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
-            $data = $referensi->updateWaktuAntrian($dataAntrol);
+            $data = $referensi->updateWaktuAntrian($payload);
             if($data["metadata"]["code"] === 200) {   
                 return response()->json([
                     'acknowledge' => 1,

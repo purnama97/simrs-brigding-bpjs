@@ -14,7 +14,6 @@ class PesertaController extends Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->name = $this->request->auth['Credentials']->name;
     }
 
     public function connection()
