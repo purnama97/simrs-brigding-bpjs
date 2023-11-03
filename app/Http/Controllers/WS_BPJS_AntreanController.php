@@ -21,11 +21,11 @@ class WS_BPJS_AntreanController extends Controller
     public function connection()
     {
         $vclaim_conf = [
-            'cons_id' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('CONS_ID_ANTROL_BPJS_DEV') : env('CONS_ID_ANTROL_BPJS'),
-            'secret_key' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('SECRET_KEY_ANTROL_BPJS_DEV') : env('SECRET_KEY_ANTROL_BPJS'),
-            'base_url' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('BASE_URL_ANTROL_BPJS_DEV') : env('BASE_URL_ANTROL_BPJS'),
-            'user_key' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('USER_KEY_ANTROL_BPJS_DEV') : env('USER_KEY_ANTROL_BPJS'),
-            'service_name' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('SERVICE_NAME_ANTROL_DEV') : env('SERVICE_NAME_ANTROL'),
+            'cons_id' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('CONS_ID_ANTROL_BPJS_DEV') : env('CONS_ID_ANTROL_BPJS_PROD'),
+            'secret_key' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('SECRET_KEY_ANTROL_BPJS_DEV') : env('SECRET_KEY_ANTROL_BPJS_PROD'),
+            'base_url' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('BASE_URL_ANTROL_BPJS_DEV') : env('BASE_URL_ANTROL_BPJS_PROD'),
+            'user_key' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('USER_KEY_ANTROL_BPJS_DEV') : env('USER_KEY_ANTROL_BPJS_PROD'),
+            'service_name' => env('APP_ENV_SERVICE') == 'DEVELOPMENT' ? env('SERVICE_NAME_ANTROL_DEV') : env('SERVICE_NAME_ANTROL_PROD'),
         ];
 
         return $vclaim_conf;
