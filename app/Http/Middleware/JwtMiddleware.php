@@ -19,17 +19,17 @@ class JwtMiddleware
         $key        = trim('JhbGciOiJIUzI1N0eXAiOiJKV1QiLC');
         $CompCode   = trim($request->header('CompCode'));
 
-        if (env("DB_DATABASE_BRIDGING_BPJS") != "RSUD_DABO_LIVE") {
-            Config::set("database.connections.sqlsrv", [
-                "host" => "192.168.1.251",
-                "database" => 'RSUD_DABO_LIVE',
-                "username" => 'sa',
-                "driver" => 'sqlsrv',
-                'port' => '1433',
-                "password" => 'Dabo2022'
-            ]);
-            DB::reconnect('sqlsrv');
-        }
+        // if (env("DB_DATABASE_BRIDGING_BPJS") != "RSUD_DABO_LIVE") {
+        //     Config::set("database.connections.sqlsrv", [
+        //         "host" => "192.168.1.251",
+        //         "database" => 'RSUD_DABO_LIVE',
+        //         "username" => 'sa',
+        //         "driver" => 'sqlsrv',
+        //         'port' => '1433',
+        //         "password" => 'Dabo2022'
+        //     ]);
+        //     DB::reconnect('sqlsrv');
+        // }
 
         if ($CompCode == "" || $token == "") {
             return response()->json([
