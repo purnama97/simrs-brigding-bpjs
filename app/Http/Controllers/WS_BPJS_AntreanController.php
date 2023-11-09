@@ -44,7 +44,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getPoli();
-            if($data["metaData"]["code"] === 1) {   
+            if($data["metaData"]["code"] == 1) {   
                 return response()->json([
                     'metaData'    => $data["metaData"],
                     'data'        => $data["response"],
@@ -74,7 +74,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getPoliFinger();
-            if($data["metadata"]["code"] === 1) {   
+            if($data["metadata"]["code"] == 1) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'data'        => $data["response"],
@@ -104,7 +104,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getPasienFinger($identitas, $noIdentitas);
-            if($data["metaData"]["code"] === 1) {   
+            if($data["metaData"]["code"] == 1) {   
                 return response()->json([
                     'metaData'    => $data["metaData"],
                     'data'        => $data["response"],
@@ -192,7 +192,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->updateJadwalDokter($data);
-            if($data["metadata"]["code"] === 200) {   
+            if($data["metadata"]["code"] == 200) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'message'     => "BPJS CONNECTED!"
@@ -222,7 +222,7 @@ class WS_BPJS_AntreanController extends Controller
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->addAntrian($data);
     
-            if($data["metadata"]["code"] === 200) {   
+            if($data["metadata"]["code"] == 200) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     // 'data'        => $data["response"],
@@ -254,7 +254,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->addAntrianFarmasi($data);
-            if($data["metadata"]["code"] === 200) {   
+            if($data["metadata"]["code"] == 200) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'message'     => "BPJS CONNECTED!"
@@ -304,7 +304,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->updateWaktuAntrian($payload);
-            if($data["metadata"]["code"] === 200) {   
+            if($data["metadata"]["code"] == 200) { 
                 return response()->json([
                     'acknowledge' => 1,
                     'metaData'    => $data["metadata"],
@@ -335,7 +335,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->batalAntrian($datas);
-            if($data["metadata"]["code"] === 200) {  
+            if($data["metadata"]["code"] == 200) {  
                 Antrian::where("kodeBooking", $datas["kodebooking"])
                     ->update([
                         "isCancel" => 1,
@@ -468,7 +468,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getAntreanTgl($tanggal);
-            if($data["metadata"]["code"] === 1) {   
+            if($data["metadata"]["code"] == 1) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'data'        => $data["response"],
@@ -498,7 +498,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getAntreanKdBooking($kodebooking);
-            if($data["metaData"]["code"] === 200) {   
+            if($data["metaData"]["code"] == 200) {   
                 return response()->json([
                     'metaData'    => $data["metaData"],
                     'data'        => $data["response"],
@@ -528,7 +528,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getAntreanBlmDilayani();
-            if($data["metadata"]["code"] === 200) {   
+            if($data["metadata"]["code"] == 200) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'data'        => $data["response"],
@@ -558,7 +558,7 @@ class WS_BPJS_AntreanController extends Controller
         try {
             $referensi = new Purnama97\Bpjs\Antrol\Antrean($vclaim_conf);
             $data = $referensi->getAntreanBlmDilayaniDokter($kodepoli, $kodedokter, $hari, $jampraktek);
-            if($data["metadata"]["code"] === 1) {   
+            if($data["metadata"]["code"] == 1) {   
                 return response()->json([
                     'metaData'    => $data["metadata"],
                     'data'        => $data["response"],
