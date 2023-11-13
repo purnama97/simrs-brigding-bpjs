@@ -53,7 +53,7 @@ class SEPController extends Controller
                                     ->orWhere("a.noKartu", 'like', "%{$keyword}%");
                             }
                         })
-                        ->paginate();
+                        ->paginate(1000);
 
             if(!empty($data)) {
                 return response()->json([
